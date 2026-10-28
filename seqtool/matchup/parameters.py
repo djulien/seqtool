@@ -53,7 +53,8 @@ def angle_value(name: str, text) -> float:
         return round((float(m.group(1)) % 12) / 12, 4)
     m = _re.fullmatch(r"(-?\d+(?:\.\d+)?)(?:deg|degrees?|°)", t)
     if m:
-        return round((float(m.group(1)) % 360) / 360, 4)
+        d = float(m.group(1))
+        return round(d / 360 if 0 <= d <= 360 else (d % 360) / 360, 4)      # 360deg: a whole turn
     try:
         v = float(t.rstrip("%"))
     except ValueError:

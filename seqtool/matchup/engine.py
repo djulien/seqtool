@@ -570,6 +570,7 @@ def run(music: dict, profile: dict, models: dict, prefs: dict, seed: int,
         pass_no: int = 1, seed_overrides: dict | None = None, lyrics: dict | None = None,
         available: set | None = None, pins: list | None = None, borrowed: dict | None = None,
         reacts: list | None = None, cues: list | None = None, palette: dict | None = None,
+        adjust: list | None = None,
         feel: dict | None = None) -> dict:
     """All passes: main (layer 0), then top, detail and enhance (passes.py), then
     music-reactive targets. pass_no is kept for compatibility (1 = everything)."""
@@ -751,6 +752,12 @@ def run(music: dict, profile: dict, models: dict, prefs: dict, seed: int,
     from . import choreo as _choreo                      # 0.24.47: choreographies -> the parts they play
     plans = _choreo.expand(plans, models, music, profile, palettes, effects_cfg["effects"], lyrics, cues, pin_notes,
                            presets)
+    if adjust is None and (music.get("lineage") or {}).get("audio"):     # 0.24.57: settings over what plays
+        from ..common import songs as _songs
+        adjust = _songs.get(music["lineage"]["audio"]).get("adjust")
+    if adjust:
+        from . import adjust_cmd
+        plans = adjust_cmd.apply(plans, adjust, profile, song_end, pin_notes)
     # a pin that ended up nowhere is said, not silently dropped
     for tid, tp in sorted(prefs["models"].get("targets", {}).items()):
         for ps, slot in (tp.get("_pins") or {}).items():

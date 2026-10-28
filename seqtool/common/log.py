@@ -73,9 +73,12 @@ def rewrites(stream) -> bool:
     if getattr(stream, "handles_cr", False) or os.environ.get("SEQTOOL_TAGS") == "1":   # the GUI, or its child
         return True
     try:
-        return bool(stream.isatty())
+        if not stream.isatty():
+            return False
     except (AttributeError, ValueError, OSError):
         return False
+    from .color import _windows_vt                    # 0.24.57: a Windows console without VT mode can't
+    return _windows_vt(stream)
 
 
 def progress(text: str, stream=None, level: str | None = None) -> None:

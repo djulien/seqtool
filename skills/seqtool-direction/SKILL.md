@@ -1,6 +1,6 @@
 ---
 name: "seqtool-direction"
-description: "(seqtool 0.24.56) Help with seqtool, which turns a song and an xLights layout into an xLights sequence (.xsq): getting started and how to use it, and turning creative direction (\"bigger chorus\", \"calmer intro\", \"flash on 'star'\") into seqtool commands, running them, checking the result and exporting. Use whenever the user mentions seqtool, or sequencing a song for an xLights light show."
+description: "(seqtool 0.24.57) Help with seqtool, which turns a song and an xLights layout into an xLights sequence (.xsq): getting started and how to use it, and turning creative direction (\"bigger chorus\", \"calmer intro\", \"flash on 'star'\") into seqtool commands, running them, checking the result and exporting. Use whenever the user mentions seqtool, or sequencing a song for an xLights light show."
 ---
 
 # Directing a seqtool sequence
@@ -31,7 +31,7 @@ changes it the same way. Then follow it: **ask** - ask before running anything y
 guess at; **decide** - take the most reasonable reading, say which, and do it (still ask when a
 wrong guess would be expensive to undo: writing into the user's xLights files, deleting).
 
-Written for **seqtool 0.24.56** (this copy comes in that version's download, beside seqtool.py;
+Written for **seqtool 0.24.57** (this copy comes in that version's download, beside seqtool.py;
 it works with later versions too).
 
 ## Running it
@@ -40,7 +40,7 @@ it works with later versions too).
   working folder (`pwd` says which; `cd FOLDER` changes it).
 - **Check the version first:** `seqtool --version`. If seqtool says a newer version is available,
   tell the user (on their computer, seqtool's `update` command gets it); don't fetch one here unless
-  they ask. Older than 0.24.56: no `update`; older than 0.24.55: lyrics times written
+  they ask. Older than 0.24.57: no `adjust`; older than 0.24.56: no `update`; older than 0.24.55: lyrics times written
   `0:12.50 words` (no brackets) aren't read - use `[0:12.50] words`; older than 0.24.54: no `general.directions`
   (ask the user's preference anyway, and keep it in mind for the session); older than 0.24.53: no `"react"` steps; older than 0.24.50: no `score`; older than 0.24.49: no `calls`, cue tags,
   `submodel angles`, `"only"`, `spread: pitch`; older than 0.24.48: no glides (`a..b`),
@@ -130,6 +130,7 @@ Start broad, then specific: a `feel` control before many pins.
 | A group's effect on each of its props ("each spinner explodes", "in unison but each on its own") vs one picture across the group | `pin GROUP @#3 meteors render=per-model` (or `render=default`: the group's own layout in xLights); for all of its effects: `pref models.targets.GROUP.render = per_model` (`auto`: seqtool picks the better - each effect has its own affinity either way). Writing it needs the kit's Render Style step: if export says so, `xlights-kit --update` |
 | A setting that changes over the effect ("speeds up through the chorus") | `pin PROP @#3 bars speed=0.2..0.9` (`a..b..c` evenly spaced) - an xLights value curve once the kit has learned them (`xlights-kit --update`), else short steps |
 | Turned / rotated ("the spoke at 10 o'clock") | `rotation=10oclock` (12 = 0, clockwise), `90deg`, or a share of a turn; `rotation=10oclock..7oclock..10oclock` sweeps - on a pin or in a choreography step |
+| Settings over whatever plays there, faces and reactions too ("the face upside down for the first phrase, turning upright") | `adjust PROP @#1 rotation=180deg..360deg from=@WORD until=@WORD --on face` (`--on`: face, react, choreo, main ...; settings: rotation, area, render; `--remove` takes it off) |
 | Different random choices | `reroll [PROP] [@#3]` (pins keep their effect) |
 | What a prop likes / avoids | `prefer PROP twinkle=like fire=avoid` (or a weight, e.g. `color_wash=1.5`); by name pattern: `rules add '(?i)flood' prefer=color_wash*1.5` |
 | Follow the music | `react PROP PRESET [@#3 \| --song] [--over]` (`presets` lists them: beat, downbeat, onset, energy, beat-chase, onset-sparkle, word-flash, lyric-color, kick/snare/bass/melody with stems ...); off: `react PROP off [@#3 \| --song]` |

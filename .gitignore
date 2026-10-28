@@ -1,10 +1,6 @@
 #my stuff
-seqtool-out/
-seqtool-prefs/
-tests/fixtures/
-DESIGN.md
-HANDOFF.md
 *-LOCAL
+*-MINE
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

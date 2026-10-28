@@ -252,7 +252,8 @@ def dispatch(argv: list[str], cmds: dict) -> int:
         print(usage(cmds))
         return 0
     if cmd == "clear":
-        sys.stdout.write("\033[2J\033[H")
+        from .common.color import _windows_vt
+        sys.stdout.write("\033[2J\033[H" if _windows_vt(sys.stdout) else "\n" * 40)
         sys.stdout.flush()
         return 0
     if cmd == "test":

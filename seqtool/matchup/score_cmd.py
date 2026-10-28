@@ -165,6 +165,20 @@ def build(sha: str, profile: dict | None, name: str = "") -> list[str]:
             if e.get("at") is not None and not e.get("repeats", True):
                 parts.append("--only")
             L.append(" ".join(parts))
+    adj = rec.get("adjust") or []
+    if adj:
+        head("adjustments (settings over whatever plays there)")
+        for e in adj:
+            parts = ["adjust", q(e["target"])]
+            if e.get("at") is not None:
+                parts.append(_at(e["at"]))
+            parts += [q(f"{k}={_val(v)}") for k, v in (e.get("params") or {}).items()]
+            parts += [q(f"{k}={e[k]}") for k in ("from", "until") if e.get(k)]
+            if e.get("at") is not None and not e.get("repeats", True) and not (e.get("from") or e.get("until")):
+                parts.append("--only")
+            if e.get("on"):
+                parts += ["--on", q(e["on"])]
+            L.append(" ".join(parts))
     seeds = (rec.get("seed"), rec.get("seed_overrides") or {})
     if seeds[0] is not None or seeds[1]:
         head("seeds (seqtool's random choices, kept)")
@@ -219,7 +233,7 @@ def _ctx():
     return m, profile, sha
 
 
-CLEAR = ("pins", "react", "cues", "palette", "feel", "definitions", "sections", "seed_overrides", "directions")
+CLEAR = ("pins", "react", "cues", "palette", "feel", "definitions", "sections", "seed_overrides", "directions", "adjust")
 
 
 def main(argv=None) -> int:

@@ -1,6 +1,6 @@
 [project]
 name = "seqtool"
-version = "0.24.56"
+version = "0.24.57"
 description = "Music-to-xLights sequence generator: analysis -> matchup -> XSQ"
 requires-python = ">=3.10"
 license = { text = "Proprietary (all third-party deps must be MIT/BSD/Apache/ISC/PD)" }

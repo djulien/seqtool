@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import io
 import os
+import sys
 import re
 
 ROLE = {"err": "red", "warn": "yellow", "ok": "green", "do": "pink", "note": "blue", "head": "teal", "b": "bold",
@@ -84,8 +85,46 @@ def ansi(text: str) -> str:
     return out + (RESET if stack else "")
 
 
+_VT: dict = {}
+
+
+def _windows_vt(stream) -> bool:
+    """0.24.57: a Windows console (conhost - e.g. a double-clicked .pyz) shows colour codes as
+    '?[95m' until its 'virtual terminal' mode is switched on; Windows Terminal has it already.
+    Switch it on for this console; False when it can't be (an old Windows: no colour then)."""
+    if os.name != "nt":
+        return True
+    try:
+        fd = stream.fileno()
+    except (AttributeError, OSError, ValueError):
+        return False
+    if fd in _VT:
+        return _VT[fd]
+    ok = False
+    try:
+        import ctypes
+        import msvcrt
+        k32 = ctypes.windll.kernel32
+        h = msvcrt.get_osfhandle(fd)
+        mode = ctypes.c_uint32()
+        if k32.GetConsoleMode(h, ctypes.byref(mode)):
+            ok = bool(mode.value & 0x0004) or bool(k32.SetConsoleMode(h, mode.value | 0x0004))
+    except Exception:  # noqa: BLE001
+        ok = False
+    _VT[fd] = ok
+    if not ok and not _VT.get("said"):
+        _VT["said"] = True
+        try:
+            sys.__stderr__.write("(colours are off: this console can't show them - for colours start seqtool in Windows "
+                                 "Terminal: open it, cd to seqtool's folder and type  python seqtool.py  (or  py "
+                                 "seqtool-X.Y.Z.pyz); NO_COLOR=1 hides this note)\n")
+        except Exception:  # noqa: BLE001
+            pass
+    return ok
+
+
 def use_color(stream) -> bool:
-    return "NO_COLOR" not in os.environ and hasattr(stream, "isatty") and stream.isatty()
+    return "NO_COLOR" not in os.environ and hasattr(stream, "isatty") and stream.isatty() and _windows_vt(stream)
 
 
 class ColorStream(io.TextIOBase):

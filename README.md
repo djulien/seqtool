@@ -1,4 +1,4 @@
-# seqtool — music → light-sequence toolchain (prototype, v0.24.56)
+# seqtool — music → light-sequence toolchain (prototype, v0.24.57)
 
 The design is in [DESIGN.md](DESIGN.md) (findings on the developer's own songs and show: DESIGN-addendum.md); [HANDOFF.md](HANDOFF.md) is the short version for picking up development (state, conventions, open items). The core is generic; xLights lives in `seqtool/adapters/xlights/`.
 
@@ -7,7 +7,7 @@ The design is in [DESIGN.md](DESIGN.md) (findings on the developer's own songs a
 You need Python 3.10+ and numpy. ffmpeg is optional and is only needed for MP3 and other non-WAV files.
 
 ```bash
-unzip seqtool-0.24.56.zip && cd seqtool
+unzip seqtool-0.24.57.zip && cd seqtool
 ./seqtool.py            # interactive prompt: type 'help', 'demo', 'inspect audio', 'quit' ...; Tab completes (twice: choices); 'history', '!!', '!N' 
 ./seqtool.py -demo      # or run one command and exit: the demo
 ./seqtool.py --gui      # prompt + live browser GUI (menu, timeline with pin/reroll on each effect and each row, a console that runs commands)
@@ -31,6 +31,12 @@ The demo writes every intermediate file to `./seqtool-demo/`:
 | demo-song.timeline.html | waveform + sections + effect lanes; play, zoom, hover; click an effect for its explanation |
 | <song>.xsq | with --rgbeffects and a learned kit: the xLights sequence |
 | demo-song.labels-*.txt | Audacity label tracks (File > Import > Labels...) |
+
+## With Claude
+
+`skills/seqtool-direction/SKILL.md` is a skill for Claude: add it to your Claude account (Settings,
+or ask Claude to save it) and Claude can set seqtool up with you, turn directions like "bigger
+chorus" into seqtool commands, run them and check the result.
 
 ## Your own material
 
@@ -110,6 +116,7 @@ The demo writes every intermediate file to `./seqtool-demo/`:
 ./seqtool.py pin Matrix @#2 picture file=pumpkin.gif              # a picture / animated GIF (pinned only)
 ./seqtool.py define set "left arm wave" --show --for spinners ...  # your terms, at levels; 'define dump' reads them
 ./seqtool.py pin Spinner1 @#3 pinwheel rotation=10oclock..7oclock..10oclock   # a setting that glides (a value curve)
+./seqtool.py adjust Matrix @#1 rotation=180deg..360deg until=@ready --on face   # settings over what plays (a face turning upright)
 ./seqtool.py score                                                    # the song's score: its terms and every direction, as commands ('score apply FILE' replays it)
 ./seqtool.py cue tag call @#3 ; ./seqtool.py calls                   # call and response: mark a pair, seqtool finds the rest
 ./seqtool.py submodel angles "Spinners" --write               # clock-position submodels (seqtool-10oclock ...) in your layout

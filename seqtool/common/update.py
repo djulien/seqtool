@@ -1,7 +1,9 @@
 # seqtool-command: update | main | setup | is there a newer seqtool? update (check now, offer to get it) | update --check
 """seqtool update [--check] [--yes]
 
-Newer seqtool versions are published at the project's GitHub page (REPO_URL below). When
+Newer seqtool versions are published at the project's GitHub page (REPO_URL below): for now the
+master branch is the latest version (UPDATE_FROM; its VERSION file says which), GitHub releases
+next. When
 seqtool starts (the seqtool> prompt, the GUI, 'start') it looks there - at most once a day, and
 only while 'general.check_updates' is on (the default) - and if there is a newer version:
 
@@ -40,7 +42,8 @@ REPO_URL = f"https://github.com/{REPO}"
 API_LATEST = f"https://api.github.com/repos/{REPO}/releases/latest"
 RAW_VERSION = "https://raw.githubusercontent.com/" + REPO + "/{branch}/VERSION"
 BRANCH_ZIP = REPO_URL + "/archive/refs/heads/{branch}.zip"
-BRANCHES = ("main", "master")
+UPDATE_FROM = "master"      # a branch whose VERSION file says the latest version, or "release" (GitHub releases)
+BRANCHES = ("master", "main")
 TIMEOUT = 4.0
 _DONE = [False]
 
@@ -66,7 +69,33 @@ def _get(url: str, binary: bool = False):
 
 def latest() -> dict | None:
     """{"version", "pyz" (url or None), "zip" (url), "page"} of the newest published version, or None
-    when it can't be found (no network, no releases and no VERSION file)."""
+    when it can't be found (no network, no releases and no VERSION file). UPDATE_FROM a branch: that
+    branch first (its VERSION file and its .zip), then the releases; "release": the other way round."""
+    if UPDATE_FROM != "release":
+        got = _branch(UPDATE_FROM)
+        if got:
+            return got
+    got = _release()
+    if got:
+        return got
+    for br in BRANCHES:
+        got = _branch(br) if br != UPDATE_FROM else None
+        if got:
+            return got
+    return None
+
+
+def _branch(br: str) -> dict | None:
+    try:
+        ver = _get(RAW_VERSION.format(branch=br)).strip()
+    except Exception:  # noqa: BLE001
+        return None
+    if vkey(ver):
+        return {"version": ver, "pyz": None, "zip": BRANCH_ZIP.format(branch=br), "page": f"{REPO_URL}/tree/{br}"}
+    return None
+
+
+def _release() -> dict | None:
     try:
         rel = json.loads(_get(API_LATEST))
         ver = str(rel.get("tag_name") or rel.get("name") or "").lstrip("vV")
@@ -76,15 +105,8 @@ def latest() -> dict | None:
             zp = next((a["browser_download_url"] for a in assets if str(a.get("name", "")).endswith(".zip")),
                       rel.get("zipball_url"))
             return {"version": ver, "pyz": pyz, "zip": zp, "page": rel.get("html_url") or REPO_URL}
-    except Exception:  # noqa: BLE001 - no releases, no network, rate limit: try the VERSION file
+    except Exception:  # noqa: BLE001 - no releases, no network, rate limit
         pass
-    for br in BRANCHES:
-        try:
-            ver = _get(RAW_VERSION.format(branch=br)).strip()
-        except Exception:  # noqa: BLE001
-            continue
-        if vkey(ver):
-            return {"version": ver, "pyz": None, "zip": BRANCH_ZIP.format(branch=br), "page": REPO_URL}
     return None
 
 
