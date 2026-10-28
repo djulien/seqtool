@@ -1,0 +1,112 @@
+{
+  "_doc": "Singing faces ('face build'): the mouth shapes drawn from a face image. w = width and h = opening, as fractions of the face's own mouth width (h 0 = closed lips); round = an O-like ring; teeth = top/both rows of teeth; tongue = tongue showing (L); lip = lower lip under the teeth (FV); thick = extra line thickness for pressed lips (MBP); beyond = how many pixels an open mouth may go past the pixels you marked (0.24.25: 1 for the widest - AI, O, U, L; up and down shows most). With marked pixels, the open shapes use the marked height (h 0.5 or more: all of it). phonemes: how sung words become mouth shapes for the seqtool-lyrics timing track (its phoneme layer) - dictionaries are tried in order: \"cmudict\" (the CMU Pronouncing Dictionary, downloaded once on first use) or a path to a file in the same format (e.g. xLights' standard_dictionary); your own pronunciations go in seqtool-prefs/pronunciations.dict (or the file given with --dictionary), checked first; mapping = ARPAbet sound -> mouth shape. sing: props given a face ('face use PROP FACE'; singing is the reaction preset 'sing' since 0.24.0, so it can be set per section - 'react PROP sing @#3') sing each lyric line (of their voice: {VOICE} codes in the lyrics, 'face use ... --voice'), from lead seconds before to tail after, lines closer than join seconds joined; mode alone = the prop's other layers rest meanwhile, over = the face on top of them (the eyes keep xLights' default, Auto: they blink).",
+  "mouth_shapes": {
+    "rest": {
+      "w": 0.9,
+      "h": 0.0
+    },
+    "MBP": {
+      "w": 0.7,
+      "h": 0.0,
+      "thick": 1
+    },
+    "etc": {
+      "w": 0.85,
+      "h": 0.18,
+      "teeth": "top"
+    },
+    "E": {
+      "w": 1.0,
+      "h": 0.22,
+      "teeth": "both"
+    },
+    "AI": {
+      "w": 0.9,
+      "h": 0.5,
+      "teeth": "top",
+      "beyond": 1
+    },
+    "O": {
+      "w": 0.6,
+      "h": 0.55,
+      "round": true,
+      "beyond": 1
+    },
+    "U": {
+      "w": 0.45,
+      "h": 0.4,
+      "round": true,
+      "beyond": 1
+    },
+    "WQ": {
+      "w": 0.3,
+      "h": 0.3,
+      "round": true
+    },
+    "FV": {
+      "w": 0.85,
+      "h": 0.2,
+      "teeth": "top",
+      "lip": true
+    },
+    "L": {
+      "w": 0.8,
+      "h": 0.4,
+      "tongue": true,
+      "beyond": 1
+    }
+  },
+  "phonemes": {
+    "dictionaries": [
+      "cmudict"
+    ],
+    "cmudict_url": "https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict",
+    "mapping": {
+      "AA": "AI",
+      "AE": "AI",
+      "AH": "AI",
+      "AO": "O",
+      "AW": "O",
+      "AY": "AI",
+      "EH": "E",
+      "ER": "E",
+      "EY": "E",
+      "IH": "AI",
+      "IY": "E",
+      "OW": "O",
+      "OY": "O",
+      "UH": "U",
+      "UW": "U",
+      "B": "MBP",
+      "M": "MBP",
+      "P": "MBP",
+      "F": "FV",
+      "V": "FV",
+      "W": "WQ",
+      "L": "L",
+      "CH": "etc",
+      "D": "etc",
+      "DH": "etc",
+      "G": "etc",
+      "HH": "etc",
+      "JH": "etc",
+      "K": "etc",
+      "N": "etc",
+      "NG": "etc",
+      "R": "etc",
+      "S": "etc",
+      "SH": "etc",
+      "T": "etc",
+      "TH": "etc",
+      "Y": "etc",
+      "Z": "etc",
+      "ZH": "etc"
+    }
+  },
+  "sing": {
+    "mode": "alone",
+    "lead": 0.15,
+    "tail": 0.25,
+    "join": 1.0
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:seqtool:schema:music-profile:1",
+  "title": "seqtool.music-profile 1.x - musical interpretation",
+  "type": "object",
+  "$ref": "urn:seqtool:schema:common:1#/$defs/envelope",
+  "required": [
+    "profile",
+    "sections"
+  ],
+  "properties": {
+    "schema": {
+      "const": "seqtool.music-profile"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "music"
+      ],
+      "properties": {
+        "music": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/inputRef"
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "styles",
+        "character"
+      ],
+      "properties": {
+        "styles": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/unitMap"
+        },
+        "character": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/unitMap"
+        },
+        "tempo_bpm": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "index",
+          "id",
+          "start",
+          "end"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "sequential internal number, 1..N"
+          },
+          "id": {
+            "type": "string"
+          },
+          "start": {
+            "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+          },
+          "end": {
+            "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+          },
+          "type": {
+            "type": "string",
+            "description": "Open vocabulary: intro, verse, pre_chorus, chorus, bridge, build, drop, breakdown, outro, ..."
+          },
+          "confidence": {
+            "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+          },
+          "energy": {
+            "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+          },
+          "repeat_of": {
+            "type": "string",
+            "description": "id of an earlier section this one repeats"
+          },
+          "repeat_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tempo": {
+            "type": "number",
+            "minimum": 0
+          },
+          "musical_features": {
+            "$ref": "urn:seqtool:schema:common:1#/$defs/unitMap"
+          },
+          "transition": {
+            "type": "object",
+            "properties": {
+              "incoming_strength": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+              },
+              "outgoing_strength": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+              }
+            }
+          },
+          "frame_range": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "[first, end) frame indexes into music.json frames"
+          },
+          "beat_range": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "[first, end) indexes into music.json events.beats"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "_doc": "Generic effect id -> xLights effect name. Setting-string encodings are NOT here: they are learned from reference .xsq files the user creates (see DESIGN.md section 7). 'transparent' means no effect is written; 'dark' is written as xLights' Off effect.",
+  "effects": {
+    "transparent": null,
+    "dark": "Off",
+    "color_wash": "Color Wash",
+    "pulse": "On",
+    "chase": "Single Strand",
+    "bars": "Bars",
+    "wipe": "Curtain",
+    "spirals": "Spirals",
+    "pinwheel": "Pinwheel",
+    "twinkle": "Twinkle",
+    "sparkles": "Shimmer",
+    "meteors": "Meteors",
+    "fire": "Fire",
+    "fill": "Fill",
+    "vu_meter": "VU Meter",
+    "picture": "Pictures"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "_doc": "How effects are scored and how much the plan resists change. weights: share of each factor in an effect's score. continuity: cost of changing effect and how strong musical transitions reduce it. decision: length of the windows effects are chosen for (seconds). random_amplitude: size of the seeded jitter. continuity.contrast_relief: how much a change in the music itself (not just a section boundary) lowers the cost of changing effect; the change is measured on the characteristics each prop's effects care about, relative to this song's own biggest changes (contrast_reference = the percentile used, 0.9). 0 turns it off. passes: the planning passes after the main one (DESIGN.md section 9) - top: role 'top' groups take over whole sections of these types (the members rest there); detail: role 'detail' groups (e.g. groups of submodels) and enabled submodels get accent effects above their parents, complement = score factor for the same effect family as the parent shows, rest = factor for 'transparent' (nothing on the detail layer); enhance: a second layer of sparse accents on the focal_count largest standalone props (or those with enhance: true), only where energy >= min_energy.",
+  "weights": {
+    "model_fit": 0.22,
+    "capability_fit": 0.18,
+    "music_fit": 0.28,
+    "style_fit": 0.1,
+    "section_fit": 0.22
+  },
+  "music_feature_weights": {
+    "energy": 1.5,
+    "beat": 1.2,
+    "tempo": 0.8,
+    "sustained": 1.0,
+    "brightness": 0.5,
+    "vocal": 0.5,
+    "drums": 0.6,
+    "melody": 0.4
+  },
+  "tempo_range_bpm": [
+    60,
+    180
+  ],
+  "random_amplitude": 0.03,
+  "unknown_capability_value": 0.3,
+  "continuity": {
+    "persistence_bonus": 0.02,
+    "change_penalty": 0.22,
+    "same_family_factor": 0.45,
+    "transition_relief": 0.95,
+    "section_boundary_default_strength": 0.75,
+    "within_section_base_strength": 0.05,
+    "energy_jump_gain": 1.5,
+    "motif_bonus": 0.05,
+    "contrast_relief": 1.0,
+    "contrast_reference": 0.9
+  },
+  "decision": {
+    "grid": "downbeat",
+    "target_window": 4.0,
+    "min_window": 1.5,
+    "max_window": 8.0
+  },
+  "top_alternatives": 3,
+  "passes": {
+    "top": {
+      "enabled": true,
+      "sections": [
+        "intro",
+        "outro"
+      ],
+      "max_groups": 1
+    },
+    "detail": {
+      "enabled": true,
+      "complement": 0.6,
+      "rest": 1.2
+    },
+    "enhance": {
+      "enabled": true,
+      "focal_count": 2,
+      "min_energy": 0.6,
+      "complement": 0.6
+    },
+    "base": {
+      "_doc": "Whole-yard moments (0.20): unison hits on strong section starts and drops, sweeps across the yard (left to right or back, by where props stand) in the bar before a strong section, call and response between the left and right halves at the start of quieter sections. per_minute: how many moments a minute at most. members: what the props' own effects do during a moment - 'cut' (they rest: only the moment shows), 'over' (they keep playing, the moment on top), 'under' (they keep playing and win; the moment shows where they rest); per prop or group: models targets.NAME.base_members, and targets.NAME.base = false leaves a prop out. escalation: how much more likely a moment is in each later repeat of a section (chorus 3 > chorus 1). effect: what a moment flashes.",
+      "enabled": true,
+      "per_minute": 1.5,
+      "members": "cut",
+      "min_props": 3,
+      "min_gap_s": 6.0,
+      "types": {
+        "unison": true,
+        "sweep": true,
+        "call_response": true
+      },
+      "escalation": 0.3,
+      "unison_min_strength": 0.6,
+      "drop_energy_jump": 0.25,
+      "call_sections": [
+        "verse",
+        "bridge",
+        "breakdown",
+        "pre_chorus"
+      ],
+      "effect": "pulse"
+    },
+    "variation": {
+      "_doc": "One-aspect variations (0.20): an effect that would run past its maximum (durations) is divided every 'every' bars (on bar lines) and each part changes exactly one aspect from the part before - aspect 'auto' (direction and colour by turns; colour when the effect has no direction), 'color', 'direction' or 'effect' (the next best effect, colours kept).",
+      "enabled": true,
+      "aspect": "auto",
+      "every": 4
+    }
+  },
+  "critic": {
+    "_doc": "Scores a whole plan to pick the best of several seeds (run --candidates N): fit x fit + variety x variety + repeats x repeats - issues x issues. candidates = how many seeds 'run' tries by default (1 = just the song's seed).",
+    "candidates": 1,
+    "fit": 1.0,
+    "variety": 0.3,
+    "repeats": 0.3,
+    "issues": 0.02
+  },
+  "durations": {
+    "_doc": "Shortest and longest an effect may last (0.20): a number is seconds, \"N bars\" / \"N beats\" follow the tempo, null = no limit. The most specific wins: effect, then family, then pass, then default. Under min, a segment is absorbed by its neighbour on the row (not across a section start); past max it is varied (passes.variation). Pinned segments, reactive plans and moments are exempt.",
+    "default": {
+      "min": 1.0,
+      "max": "8 bars"
+    },
+    "family": {
+      "color": {
+        "max": "16 bars"
+      }
+    },
+    "effect": {},
+    "pass": {
+      "top": {
+        "max": "16 bars"
+      }
+    }
+  }
+}

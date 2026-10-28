@@ -1,0 +1,24 @@
+# Directions to compare: Claude (the seqtool-direction skill) and 'seqtool direct'.
+# Translate each line yourself and write 'TEXT => CMD; CMD' to a new file, then:
+#     seqtool direct --eval THAT-FILE
+# The section numbers and prop names depend on the song and the layout - use the current ones.
+make the chorus bigger
+a little calmer in the second verse, and warmer
+too busy
+more together
+way cooler
+dark until the vocals
+the arches flash on 'star' and 'night'
+the spinners twinkle in the bridge
+the columns and the floods pulse to the beat
+hit at 1:05
+try something else for the tree in the chorus
+build up in the bridge
+the matrix sings
+everything dark in the outro
+the house outline chases on the beat in the last chorus
+back to normal
+enlarge the chorus by 2 bars
+reduce the second verse by 4 beats
+make the brige calmer
+flash at @star

@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:seqtool:schema:matchup:1",
+  "title": "seqtool.matchup 1.x - abstract effect plan (no xLights encoding)",
+  "type": "object",
+  "$ref": "urn:seqtool:schema:common:1#/$defs/envelope",
+  "required": [
+    "settings",
+    "palettes",
+    "plans"
+  ],
+  "properties": {
+    "schema": {
+      "const": "seqtool.matchup"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "music",
+        "music_profile",
+        "models"
+      ],
+      "properties": {
+        "music": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/inputRef"
+        },
+        "music_profile": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/inputRef"
+        },
+        "models": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/inputRef"
+        },
+        "preferences_sha256": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/sha256"
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "required": [
+        "seed"
+      ],
+      "properties": {
+        "seed": {
+          "type": "integer"
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "iteration": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "palettes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "colors"
+        ],
+        "properties": {
+          "colors": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^#[0-9A-F]{6}$"
+            }
+          }
+        }
+      }
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target",
+          "layer",
+          "segments"
+        ],
+        "properties": {
+          "target": {
+            "type": "string"
+          },
+          "target_kind": {
+            "type": "string"
+          },
+          "layer": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/segment"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "segment": {
+      "type": "object",
+      "required": [
+        "start",
+        "end",
+        "selected"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+        },
+        "end": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+        },
+        "section": {
+          "type": "string"
+        },
+        "selected": {
+          "type": "object",
+          "required": [
+            "effect",
+            "score"
+          ],
+          "properties": {
+            "effect": {
+              "type": "string",
+              "description": "abstract effect id from effects.json"
+            },
+            "family": {
+              "type": "string"
+            },
+            "score": {
+              "type": "number"
+            }
+          }
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "palette": {
+          "type": "string"
+        },
+        "score_breakdown": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "continuity": {
+          "type": "object"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "effect",
+              "score"
+            ]
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "section_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

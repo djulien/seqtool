@@ -1,0 +1,291 @@
+{
+  "_doc": "Guided tutorials for the 'tutorial' command. Each step: say (text, colour codes allowed), do (a suggested command - Enter runs it; {prop} {group} {chorus} are filled in from your current results), manual (something to do outside seqtool - Enter confirms), read (true: the step only explains - Enter goes on), check (what must be true to move on; default: the command ran without an error).",
+  "tutorials": {
+    "basics": {
+      "title": "Getting around: the demo, the GUI and 'explain'",
+      "steps": [
+        {
+          "say": "seqtool turns a song plus your xLights layout into a sequence. The demo does the whole chain on a made-up song and yard, so you can see every stage.",
+          "do": "demo",
+          "check": "matchup"
+        },
+        {
+          "say": "Every stage printed a '== n/7' banner and wrote a file. Let's ask why one prop shows its effect in the middle of a chorus.",
+          "do": "explain {prop} {chorus}"
+        },
+        {
+          "say": "'explain' without a time shows the settings that apply to a prop all the time.",
+          "do": "explain {prop}"
+        },
+        {
+          "say": "The same for the music itself: what the analysis heard at that moment.",
+          "do": "explain music {chorus}"
+        },
+        {
+          "say": "The GUI shows the waveform, sections and every prop's effects, with a console like this one. Point at a small preview to enlarge it; click an effect or a name for its explanation.",
+          "do": "gui"
+        },
+        {
+          "say": "Help is grouped by topic. In the GUI there is also a Help button.",
+          "do": "help"
+        }
+      ]
+    },
+    "your-song": {
+      "title": "Your own song on your own layout",
+      "steps": [
+        {
+          "say": "First store your show layout once: give the folder with xlights_rgbeffects.xml (or the file). seqtool remembers it.",
+          "do": "layout",
+          "check": "layout_stored"
+        },
+        {
+          "say": "Now run the whole chain on a song - type the command with your file, e.g. {do}run --audio '/music/Carol of the Bells.mp3'{/} (globs work). Results go next to the song, in a <song>-seqtool folder.",
+          "check": "matchup"
+        },
+        {
+          "say": "'status' says which files are up to date; changed settings make results stale and the next run rebuilds only what's needed.",
+          "do": "status"
+        },
+        {
+          "say": "Look at the result.",
+          "do": "gui"
+        }
+      ]
+    },
+    "sections": {
+      "title": "Checking and fixing the song's sections",
+      "steps": [
+        {
+          "say": "Effects are chosen per section, so sections matter. List them; each shows its type and which earlier section it repeats.",
+          "do": "sections",
+          "check": "matchup"
+        },
+        {
+          "say": "Fix one: e.g. {do}sections type 3 chorus{/}, {do}sections merge 4{/}, {do}sections move 5 1:02.5{/} or {do}sections split 2 0:31{/}. Your edits are kept for this song and survive re-analysis.",
+          "check": "section_edit"
+        },
+        {
+          "say": "Run again to plan with the fixed sections.",
+          "do": "run"
+        }
+      ]
+    },
+    "react": {
+      "title": "Effects and reactions: props that follow the music (react and presets)",
+      "steps": [
+        {
+          "say": "{head}Effects or reactions?{/}\n  {head}An effect{/}: seqtool cuts the song into windows (a section, or part of one) and picks one effect for each,\n  scored against the window as a whole - its energy, the kind of section, what the prop suits. Its settings stay\n  the same from start to end. {do}reroll{/} picks again, {do}pin{/} keeps one.\n  {head}A reaction{/}: you choose a preset and the music places it - an effect on every beat, downbeat, note or sung\n  word - and its settings can follow the music (brightness with the loudness, a new colour each beat). It is\n  not scored or rerolled: the same music gives the same result.\n  Where a prop reacts, its normal effects rest (dashed 'reacting' cells on its row in the GUI), or stay\n  underneath with --over. Your pins and placed effects beat seqtool's own choices; between a pin and a\n  reaction, the later command wins. A singing face is a reaction too (the preset 'sing').\n  In short: an effect suits a stretch of the song; a reaction follows its events.",
+          "read": true
+        },
+        {
+          "say": "Presets say what happens on a musical event: a flash on each beat, sparkles on each note, a colour change when it gets loud...",
+          "do": "presets",
+          "check": "matchup"
+        },
+        {
+          "say": "Give one prop a preset. --over keeps its normal effects underneath.",
+          "do": "react {prop} beat-chase --over",
+          "check": "react_set"
+        },
+        {
+          "say": "Run again to plan it.",
+          "do": "run"
+        },
+        {
+          "say": "See what it does now.",
+          "do": "explain {prop}"
+        },
+        {
+          "say": "Lists work like conditional formatting - the first preset that matches wins: e.g. chases in choruses, plain flashes elsewhere.",
+          "do": "react {prop} chorus-beat-chase,beat --over"
+        },
+        {
+          "say": "In the GUI, the '...' on a reaction (or Ctrl+click) turns it off here or for the song, picks another reaction, or puts an effect of your own there instead. The same as a command: no reaction for this prop any more.",
+          "do": "react {prop} off"
+        }
+      ]
+    },
+    "rules": {
+      "title": "Settings by naming convention (rules)",
+      "steps": [
+        {
+          "say": "A rule gives every model or group whose name matches a pattern the same settings. Patterns are regular expressions, found anywhere in the name: (?i) at the start ignores upper/lower case, | means or ('flood|arch'), ^ and $ mean the start and end of the name ('^arch', '-all$'), . is any one character and .* any run of characters ('mega.*tree'). Try a pattern first.",
+          "do": "rules test '(?i)flood|arch'"
+        },
+        {
+          "say": "Make floods lean towards colour washes (a preference multiplies the score; 0 would forbid an effect).",
+          "do": "rules add '(?i)flood' prefer=color_wash*1.5",
+          "check": "rule_exists"
+        },
+        {
+          "say": "Run again, then 'explain' shows which rule applied.",
+          "do": "run"
+        },
+        {
+          "say": "List your rules; 'rules remove N' takes one away.",
+          "do": "rules"
+        }
+      ]
+    },
+    "presets": {
+      "title": "Making your own preset (keyframes and conditions)",
+      "steps": [
+        {
+          "say": "Look at a built-in preset that uses CSS-style keyframes for a syncopated 3+3+2 rhythm.",
+          "do": "presets tresillo",
+          "check": "matchup"
+        },
+        {
+          "say": "Copy it into your own presets file under a new name and change it: {do}pref edit presets{/} opens it in your editor (or create seqtool-prefs/presets.json with {\"presets\": {\"my-beat\": {...}}}).",
+          "manual": "save your preset",
+          "check": "user_preset"
+        },
+        {
+          "say": "Use it on a prop and run.",
+          "check": "react_set"
+        },
+        {
+          "say": "Run again to plan it.",
+          "do": "run"
+        }
+      ]
+    },
+    "lyrics": {
+      "title": "Lyrics: a timing track and lyric-triggered presets",
+      "steps": [
+        {
+          "say": "Get timed lyrics as an .lrc file (many lyric sites and tools export it) or as Audacity labels, then import them for the current song, e.g. {do}lyrics import song.lrc{/}.",
+          "check": "lyrics"
+        },
+        {
+          "say": "Check what was imported.",
+          "do": "lyrics"
+        },
+        {
+          "say": "Run again: the export gets a seqtool-lyrics timing track, and presets can use on: lyric / word.",
+          "do": "run"
+        },
+        {
+          "say": "'explain music' now shows the line being sung.",
+          "do": "explain music {chorus}"
+        }
+      ]
+    },
+    "xlights": {
+      "title": "From a plan to an xLights sequence",
+      "steps": [
+        {
+          "say": "seqtool learns how YOUR xLights version stores effects from one training file: the wizard asks for one small change at a time and checks each save. It runs in a terminal.",
+          "do": "xlights-kit",
+          "check": "kit"
+        },
+        {
+          "say": "With your layout stored and the training done, 'run' ends with the xLights export.",
+          "do": "run",
+          "check": "xsq"
+        },
+        {
+          "manual": "open the .xsq in xLights",
+          "say": "Open the new .xsq in xLights. If the seqtool timing tracks don't show, add them to your Master View (View > Display Elements). Press Enter when done."
+        }
+      ]
+    },
+    "faces": {
+      "title": "Singing faces: lyrics, phonemes and a face that sings them (end to end)",
+      "steps": [
+        {
+          "say": "The face follows the words, so the xLights training needs the Faces effect. In a terminal run {do}xlights-kit --update{/}. For the Phoneme Track step xLights only lists a track that has been broken down: add a timing track, type a few words into a mark (or right-click > Import Lyrics), right-click > Breakdown Phrases, then right-click > Breakdown Words.",
+          "check": "kit"
+        },
+        {
+          "say": "Get the lyrics with word times from the singing (Whisper on the vocal stem; the first time it downloads a model). If you have the words as text, {do}lyrics align words.txt{/} times them instead.",
+          "do": "lyrics transcribe",
+          "check": "words"
+        },
+        {
+          "say": "Look at what was heard: each line with its time and word count.",
+          "do": "lyrics"
+        },
+        {
+          "say": "Turn the words into mouth shapes. The first time this offers to download the CMU Pronouncing Dictionary - answer y. Words it has to guess are listed as lines: correct them and paste them into your add-on dictionary (seqtool-prefs/pronunciations.dict), then run it again.",
+          "do": "lyrics phonemes",
+          "check": "dictionary"
+        },
+        {
+          "say": "Make a face from a pixel image of one (a 24x24 pumpkin or a full-size picture - it is fitted to the prop's grid; wildcards work), or skip this step (s) and use one of your faces ({do}face list{/}). With the GUI open, a viewer shows every mouth: flip with < >.",
+          "do": "face build {faceprop} ~/faces/*.png",
+          "check": "face_built"
+        },
+        {
+          "say": "Put the face into xLights (skip this if you use one of your own faces).",
+          "manual": "close xLights, copy xlights_rgbeffects.xml, and paste the face definition (Copy button, or already on the clipboard) inside <model name='{faceprop}' ...> next to its other <faceInfo .../> lines; save"
+        },
+        {
+          "say": "Read the changed layout, so seqtool knows the new face.",
+          "do": "layout",
+          "check": "face_in_layout"
+        },
+        {
+          "say": "Give the prop its face: it sings each lyric line and its other effects rest meanwhile ({do}--over{/} keeps them underneath).",
+          "do": "face use {faceprop} {face}",
+          "check": "faces_used"
+        },
+        {
+          "say": "Run again: the summary lists the singing faces, and the xLights export gets the phoneme layer.",
+          "do": "run",
+          "check": "xsq"
+        },
+        {
+          "say": "Check one sung moment: it says which face sings and when.",
+          "do": "explain {faceprop} {chorus}"
+        },
+        {
+          "say": "Look at it in xLights.",
+          "manual": "open the .xsq: seqtool-lyrics should have three layers (phrases, words, phonemes - add it to the Master View if it doesn't show) and {faceprop} a Faces effect on each sung line, set to '{face}' and seqtool-lyrics; play it and watch the mouth"
+        }
+      ]
+    },
+    "direction": {
+      "title": "Directing in plain words: the feel controls and Claude's seqtool-direction skill",
+      "steps": [
+        {
+          "say": "{head}Ways to steer a sequence{/}\n  1. One change at a time: pin, react, cue, palette ... (the GUI menus do the same).\n  2. {head}feel{/}: four broad controls for the song - busy, intensity, warmth, unison - each 0 to 1, 0.5 = seqtool's own choice.\n  3. In plain words, through Claude: with the {head}seqtool-direction{/} skill, Claude turns \"make the last chorus bigger\"\n     into these commands, runs them, checks the result and tells you what it did.",
+          "read": true
+        },
+        {
+          "say": "See the song's feel now.",
+          "do": "feel"
+        },
+        {
+          "say": "Make the effects change more often.",
+          "do": "feel busy 0.7"
+        },
+        {
+          "say": "Calmer effects in one section (and its repeats) - intensity also works per section.",
+          "do": "feel intensity low {chorus}"
+        },
+        {
+          "say": "Warmer colours for the whole song.",
+          "do": "feel warmth 0.7"
+        },
+        {
+          "say": "Take the last change back.",
+          "do": "undo"
+        },
+        {
+          "say": "{head}Optional - setting up Claude{/} (skip with s if it is set up already):\n  - Claude needs to reach seqtool: the Claude desktop app with this computer's folder, or Claude Code on this computer -\n    https://claude.com/resources/tutorials/navigating-the-claude-desktop-app\n  - Add the seqtool-direction skill to your account (Customize > Skills > + > Create skill > Upload a skill) -\n    https://support.claude.com/en/articles/12512180 (using skills) and https://support.claude.com/en/articles/12512198 (custom skills)",
+          "manual": "set up Claude (or skip with s)"
+        },
+        {
+          "say": "{head}Through Claude{/}: in a Claude session that can reach seqtool (this folder, or a linked computer), with the\n  seqtool-direction skill saved, ask in your own words, e.g.\n    \"In the current song, keep the intro dark until the singing starts, make the last chorus bigger,\n     and flash the star on the word 'star'.\"\n  Claude checks the seqtool version, runs one batch (sections split 1 @vocals; pin ... dark; feel intensity\n  high @#N; react Star word-flash --words star --over ...), checks it with 'explain', and reports - 'undo' takes\n  it back in one step. Look at the result in the GUI and adjust by mouse.",
+          "manual": "ask Claude in your own words (or skip with s)"
+        },
+        {
+          "say": "When it looks right: write the .xsq for xLights (a change doesn't write it by itself).",
+          "do": "xlights-export"
+        }
+      ]
+    }
+  }
+}

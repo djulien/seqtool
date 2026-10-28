@@ -1,0 +1,1010 @@
+{
+  "_doc": "Generic effect vocabulary (no xLights names; see adapters/xlights/effect_map.json). music_fit = IDEAL feature levels 0..1; model_fit keyed by models.json geometry_class; geometry_requirements are soft; hard_min entries are gates; layers lists which passes may use the effect. drums (level of the drum stem) and melody (how much of the window has a clear tune) are measured only with stems ('run --stems'); without them they are left out of the fit. A parameter with choices picks one by the seed; by_class narrows the choices for a prop shape (geometry_class), e.g. meteors explode on spinners and rings (0.24.25). 'render' (0.24.36): on a group xLights draws as one picture, how good the effect looks that way ('group', with the group's shape) and on each of its props ('per_model', with the props' shapes) - 1.0 each when not given; the better one is used (a group's 'render' preference or a pin's render= decides instead).",
+  "features": [
+    "energy",
+    "beat",
+    "tempo",
+    "sustained",
+    "brightness",
+    "vocal",
+    "drums",
+    "melody"
+  ],
+  "effects": {
+    "transparent": {
+      "help": "no effect from this pass: lower layers and the base pass show through (the prop is dark only when nothing is underneath) - rests, quiet intros, contrast before a big moment",
+      "family": "none",
+      "inertia": 0.6,
+      "music_fit": {
+        "energy": 0.05,
+        "beat": 0.1,
+        "sustained": 0.6
+      },
+      "model_fit": {
+        "default": 0.5,
+        "FIGURE": 0.5,
+        "FLOOD": 0.5
+      },
+      "section_affinity": {
+        "intro": 0.6,
+        "outro": 0.6,
+        "breakdown": 0.6,
+        "chorus": 0.05,
+        "drop": 0.0
+      },
+      "style_affinity": {
+        "ambient": 0.6,
+        "ballad": 0.6
+      },
+      "parameters": {},
+      "layers": [
+        0
+      ]
+    },
+    "dark": {
+      "help": "the prop explicitly black: masks its lower layers and earlier rows (xLights Off). Never chosen automatically - use it with 'pin' or in a preset",
+      "family": "none",
+      "inertia": 0.6,
+      "music_fit": {
+        "energy": 0.05,
+        "beat": 0.1,
+        "sustained": 0.6
+      },
+      "model_fit": {
+        "default": 0.5,
+        "FIGURE": 0.5,
+        "FLOOD": 0.5
+      },
+      "section_affinity": {
+        "intro": 0.6,
+        "outro": 0.6,
+        "breakdown": 0.6,
+        "chorus": 0.05,
+        "drop": 0.0
+      },
+      "style_affinity": {
+        "ambient": 0.6,
+        "ballad": 0.6
+      },
+      "parameters": {},
+      "layers": [
+        0
+      ],
+      "auto": false
+    },
+    "color_wash": {
+      "help": "the whole prop in one colour, slowly blending through the palette; calm, sustained, good base for floods and big surfaces",
+      "family": "color",
+      "inertia": 1.0,
+      "music_fit": {
+        "energy": 0.3,
+        "beat": 0.25,
+        "tempo": 0.3,
+        "sustained": 0.85,
+        "vocal": 0.6,
+        "drums": 0.2,
+        "melody": 0.5
+      },
+      "model_fit": {
+        "default": 0.8,
+        "SURFACE_2D": 0.75,
+        "CONE": 0.85,
+        "FIGURE": 0.95,
+        "FLOOD": 1.0
+      },
+      "geometry_requirements": {
+        "color_wash": 0.5
+      },
+      "section_affinity": {
+        "intro": 0.9,
+        "verse": 0.6,
+        "bridge": 0.7,
+        "outro": 0.9,
+        "chorus": 0.35,
+        "drop": 0.2
+      },
+      "style_affinity": {
+        "ballad": 0.9,
+        "ambient": 0.9,
+        "orchestral": 0.8,
+        "traditional_christmas": 0.7,
+        "electronic": 0.4
+      },
+      "parameters": {
+        "transition_speed": {
+          "driver": "energy",
+          "range": [
+            0.1,
+            0.6
+          ]
+        },
+        "brightness": {
+          "driver": "energy",
+          "range": [
+            0.55,
+            1.0
+          ]
+        }
+      },
+      "layers": [
+        0
+      ],
+      "render": {
+        "group": 1.0,
+        "per_model": 0.95
+      }
+    },
+    "pulse": {
+      "help": "the whole prop lights at once and fades; punchy accents, beat flashes",
+      "family": "pulse",
+      "inertia": 0.5,
+      "music_fit": {
+        "energy": 0.8,
+        "beat": 0.95,
+        "tempo": 0.6,
+        "sustained": 0.15,
+        "drums": 0.85,
+        "melody": 0.3
+      },
+      "model_fit": {
+        "default": 0.75,
+        "SURFACE_2D": 0.8,
+        "CONE": 0.8,
+        "RADIAL": 0.85,
+        "ORNAMENT": 0.85,
+        "FIGURE": 0.9,
+        "FLOOD": 1.0
+      },
+      "geometry_requirements": {
+        "color_wash": 0.4
+      },
+      "section_affinity": {
+        "chorus": 0.8,
+        "drop": 0.95,
+        "build": 0.6,
+        "verse": 0.4,
+        "intro": 0.2
+      },
+      "style_affinity": {
+        "electronic": 0.9,
+        "rock": 0.7,
+        "pop": 0.7,
+        "ballad": 0.2
+      },
+      "parameters": {
+        "intensity": {
+          "driver": "energy",
+          "range": [
+            0.6,
+            1.0
+          ]
+        },
+        "decay": {
+          "driver": "sustained",
+          "range": [
+            0.2,
+            0.8
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ]
+    },
+    "chase": {
+      "help": "a band of light running along the prop; motion along lines, arches, rooflines",
+      "family": "motion",
+      "inertia": 0.7,
+      "music_fit": {
+        "energy": 0.75,
+        "beat": 0.95,
+        "tempo": 0.8,
+        "sustained": 0.2,
+        "drums": 0.75
+      },
+      "model_fit": {
+        "default": 0.5,
+        "LINEAR": 1.0,
+        "ARC": 1.0,
+        "RING": 0.9,
+        "CONE": 0.6,
+        "SURFACE_2D": 0.5,
+        "RADIAL": 0.6,
+        "FIGURE": 0.3,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "chase": 0.6
+      },
+      "hard_min": {
+        "chase": 0.2
+      },
+      "section_affinity": {
+        "verse": 0.7,
+        "chorus": 0.8,
+        "drop": 0.8,
+        "build": 0.7,
+        "intro": 0.3
+      },
+      "style_affinity": {
+        "rock": 0.9,
+        "electronic": 0.85,
+        "pop": 0.8,
+        "traditional_christmas": 0.6,
+        "ballad": 0.2
+      },
+      "parameters": {
+        "speed": {
+          "driver": "tempo",
+          "range": [
+            0.3,
+            1.0
+          ]
+        },
+        "width": {
+          "driver": "sustained",
+          "range": [
+            0.15,
+            0.6
+          ]
+        },
+        "direction": {
+          "choices": [
+            "forward",
+            "reverse",
+            "bounce"
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 1.0,
+        "per_model": 0.85
+      }
+    },
+    "bars": {
+      "help": "coloured bars sweeping up, down, sideways or out from the centre; strong rhythmic motion on matrices and trees",
+      "family": "motion",
+      "inertia": 0.7,
+      "music_fit": {
+        "energy": 0.7,
+        "beat": 0.85,
+        "tempo": 0.7,
+        "sustained": 0.3,
+        "drums": 0.75
+      },
+      "model_fit": {
+        "default": 0.6,
+        "LINEAR": 0.9,
+        "ARC": 0.85,
+        "SURFACE_2D": 0.9,
+        "CONE": 0.85,
+        "RADIAL": 0.4,
+        "ORNAMENT": 0.3,
+        "RING": 0.3,
+        "FIGURE": 0.4,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "linear_motion": 0.4
+      },
+      "section_affinity": {
+        "verse": 0.7,
+        "chorus": 0.7,
+        "build": 0.8,
+        "drop": 0.6
+      },
+      "style_affinity": {
+        "rock": 0.85,
+        "pop": 0.8,
+        "electronic": 0.75,
+        "traditional_christmas": 0.6
+      },
+      "parameters": {
+        "speed": {
+          "driver": "tempo",
+          "range": [
+            0.2,
+            0.9
+          ]
+        },
+        "count": {
+          "driver": "energy",
+          "range": [
+            0.2,
+            0.8
+          ]
+        },
+        "direction": {
+          "choices": [
+            "up",
+            "down",
+            "left",
+            "right",
+            "expand",
+            "compress"
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 1.0,
+        "per_model": 0.85
+      }
+    },
+    "wipe": {
+      "help": "colour sweeping across the prop like a curtain opening or closing; transitions, reveals",
+      "family": "motion",
+      "inertia": 0.4,
+      "music_fit": {
+        "energy": 0.6,
+        "beat": 0.6,
+        "tempo": 0.5,
+        "sustained": 0.5,
+        "drums": 0.6
+      },
+      "model_fit": {
+        "default": 0.6,
+        "LINEAR": 0.85,
+        "SURFACE_2D": 0.9,
+        "CONE": 0.7,
+        "ARC": 0.75,
+        "RING": 0.3,
+        "RADIAL": 0.3,
+        "FIGURE": 0.6,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "linear_motion": 0.3
+      },
+      "section_affinity": {
+        "build": 0.7,
+        "pre_chorus": 0.7,
+        "bridge": 0.5
+      },
+      "style_affinity": {
+        "pop": 0.7,
+        "orchestral": 0.6
+      },
+      "parameters": {
+        "speed": {
+          "driver": "energy",
+          "range": [
+            0.3,
+            0.9
+          ]
+        },
+        "direction": {
+          "choices": [
+            "left",
+            "right",
+            "center_out",
+            "edges_in"
+          ]
+        }
+      },
+      "layers": [
+        0
+      ],
+      "render": {
+        "group": 1.0,
+        "per_model": 0.85
+      }
+    },
+    "spirals": {
+      "help": "bands winding around the prop, rotating; classic for mega trees and cones",
+      "family": "radial",
+      "inertia": 0.9,
+      "music_fit": {
+        "energy": 0.8,
+        "beat": 0.75,
+        "tempo": 0.75,
+        "sustained": 0.45,
+        "drums": 0.5,
+        "melody": 0.5
+      },
+      "model_fit": {
+        "default": 0.3,
+        "CONE": 1.0,
+        "SURFACE_2D": 0.8,
+        "RADIAL": 0.85,
+        "VOLUME": 0.8,
+        "LINEAR": 0.2,
+        "ARC": 0.3,
+        "FIGURE": 0.2,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "rotational_motion": 0.6
+      },
+      "hard_min": {
+        "rotational_motion": 0.15
+      },
+      "section_affinity": {
+        "chorus": 0.95,
+        "drop": 0.85,
+        "verse": 0.5,
+        "build": 0.6
+      },
+      "style_affinity": {
+        "electronic": 0.85,
+        "pop": 0.8,
+        "rock": 0.75,
+        "traditional_christmas": 0.85,
+        "orchestral": 0.7
+      },
+      "parameters": {
+        "rotation_speed": {
+          "driver": "tempo",
+          "range": [
+            0.25,
+            0.9
+          ]
+        },
+        "thickness": {
+          "driver": "sustained",
+          "range": [
+            0.25,
+            0.7
+          ]
+        },
+        "arms": {
+          "driver": "energy",
+          "range": [
+            0.2,
+            0.6
+          ]
+        },
+        "direction": {
+          "choices": [
+            "clockwise",
+            "counterclockwise"
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 0.8,
+        "per_model": 1.0
+      }
+    },
+    "pinwheel": {
+      "help": "arms rotating around a centre; spinners, stars, wreaths, round props",
+      "family": "radial",
+      "inertia": 0.8,
+      "music_fit": {
+        "energy": 0.8,
+        "beat": 0.85,
+        "tempo": 0.8,
+        "sustained": 0.3,
+        "drums": 0.6
+      },
+      "model_fit": {
+        "default": 0.2,
+        "RADIAL": 1.0,
+        "RING": 0.7,
+        "ORNAMENT": 0.8,
+        "SURFACE_2D": 0.7,
+        "FIGURE": 0.1,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "radial_motion": 0.6,
+        "rotational_motion": 0.5
+      },
+      "hard_min": {
+        "radial_motion": 0.3
+      },
+      "section_affinity": {
+        "chorus": 0.9,
+        "drop": 0.95,
+        "build": 0.6
+      },
+      "style_affinity": {
+        "electronic": 0.95,
+        "rock": 0.7,
+        "pop": 0.7
+      },
+      "parameters": {
+        "rotation_speed": {
+          "driver": "tempo",
+          "range": [
+            0.3,
+            1.0
+          ]
+        },
+        "arms": {
+          "driver": "energy",
+          "range": [
+            0.3,
+            0.8
+          ]
+        },
+        "direction": {
+          "choices": [
+            "clockwise",
+            "counterclockwise"
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 0.75,
+        "per_model": 1.0
+      }
+    },
+    "twinkle": {
+      "help": "random pixels fading in and out; gentle, sparse, quiet passages",
+      "family": "sparkle",
+      "inertia": 0.9,
+      "music_fit": {
+        "energy": 0.3,
+        "beat": 0.3,
+        "tempo": 0.4,
+        "sustained": 0.7,
+        "brightness": 0.7,
+        "drums": 0.3,
+        "melody": 0.6
+      },
+      "model_fit": {
+        "default": 0.75,
+        "ORNAMENT": 1.0,
+        "RING": 0.9,
+        "LINEAR": 0.85,
+        "ARC": 0.85,
+        "CONE": 0.85,
+        "FIGURE": 0.85,
+        "FLOOD": 0.1
+      },
+      "geometry_requirements": {
+        "twinkle": 0.5
+      },
+      "section_affinity": {
+        "intro": 0.9,
+        "verse": 0.6,
+        "bridge": 0.8,
+        "outro": 0.9,
+        "breakdown": 0.8,
+        "drop": 0.1
+      },
+      "style_affinity": {
+        "traditional_christmas": 0.95,
+        "ballad": 0.8,
+        "ambient": 0.85,
+        "orchestral": 0.7
+      },
+      "parameters": {
+        "density": {
+          "driver": "energy",
+          "range": [
+            0.2,
+            0.7
+          ]
+        },
+        "rate": {
+          "driver": "tempo",
+          "range": [
+            0.2,
+            0.7
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ]
+    },
+    "sparkles": {
+      "help": "the whole prop flickering rapidly; bright, busy, high energy",
+      "family": "sparkle",
+      "inertia": 0.4,
+      "music_fit": {
+        "energy": 0.75,
+        "beat": 0.6,
+        "tempo": 0.7,
+        "sustained": 0.3,
+        "brightness": 0.85,
+        "drums": 0.5,
+        "melody": 0.55
+      },
+      "model_fit": {
+        "default": 0.7,
+        "ORNAMENT": 0.95,
+        "RING": 0.85,
+        "FIGURE": 0.8,
+        "FLOOD": 0.3
+      },
+      "geometry_requirements": {
+        "sparkle": 0.5
+      },
+      "section_affinity": {
+        "chorus": 0.7,
+        "drop": 0.7,
+        "build": 0.6
+      },
+      "style_affinity": {
+        "electronic": 0.7,
+        "pop": 0.7,
+        "traditional_christmas": 0.8
+      },
+      "parameters": {
+        "intensity": {
+          "driver": "energy",
+          "range": [
+            0.5,
+            1.0
+          ]
+        },
+        "rate": {
+          "driver": "brightness",
+          "range": [
+            0.3,
+            0.9
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ]
+    },
+    "meteors": {
+      "help": "streaks of light with fading trails falling or shooting across the prop; flowing, energetic",
+      "family": "particle",
+      "inertia": 0.8,
+      "music_fit": {
+        "energy": 0.65,
+        "beat": 0.6,
+        "tempo": 0.65,
+        "sustained": 0.5,
+        "brightness": 0.6,
+        "drums": 0.5,
+        "melody": 0.6
+      },
+      "model_fit": {
+        "default": 0.6,
+        "CONE": 0.95,
+        "SURFACE_2D": 0.9,
+        "LINEAR": 0.8,
+        "ARC": 0.8,
+        "RADIAL": 0.75,
+        "RING": 0.65,
+        "FIGURE": 0.3,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "particles": 0.5
+      },
+      "section_affinity": {
+        "verse": 0.75,
+        "bridge": 0.7,
+        "chorus": 0.6,
+        "outro": 0.5
+      },
+      "style_affinity": {
+        "traditional_christmas": 0.85,
+        "orchestral": 0.75,
+        "pop": 0.7,
+        "electronic": 0.6
+      },
+      "parameters": {
+        "speed": {
+          "driver": "tempo",
+          "range": [
+            0.2,
+            0.8
+          ]
+        },
+        "count": {
+          "driver": "energy",
+          "range": [
+            0.2,
+            0.7
+          ]
+        },
+        "trail": {
+          "driver": "sustained",
+          "range": [
+            0.3,
+            0.8
+          ]
+        },
+        "direction": {
+          "choices": [
+            "down",
+            "up",
+            "left",
+            "right",
+            "explode",
+            "implode"
+          ],
+          "by_class": {
+            "RADIAL": [
+              "explode"
+            ],
+            "RING": [
+              "explode"
+            ]
+          }
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 0.9,
+        "per_model": 1.0
+      }
+    },
+    "fire": {
+      "help": "flickering flames rising from one edge; warm, organic, builds and intense sections",
+      "family": "organic",
+      "inertia": 0.8,
+      "music_fit": {
+        "energy": 0.85,
+        "beat": 0.5,
+        "tempo": 0.6,
+        "sustained": 0.6,
+        "drums": 0.4
+      },
+      "model_fit": {
+        "default": 0.3,
+        "SURFACE_2D": 1.0,
+        "CONE": 0.85,
+        "VOLUME": 0.8,
+        "LINEAR": 0.25,
+        "FIGURE": 0.4,
+        "FLOOD": 0.0
+      },
+      "geometry_requirements": {
+        "vertical_motion": 0.6
+      },
+      "hard_min": {
+        "vertical_motion": 0.25
+      },
+      "section_affinity": {
+        "chorus": 0.6,
+        "drop": 0.8,
+        "solo": 0.8,
+        "bridge": 0.5
+      },
+      "style_affinity": {
+        "rock": 0.9,
+        "orchestral": 0.6,
+        "electronic": 0.5,
+        "traditional_christmas": 0.3
+      },
+      "parameters": {
+        "height": {
+          "driver": "energy",
+          "range": [
+            0.4,
+            1.0
+          ]
+        },
+        "growth": {
+          "driver": "beat",
+          "range": [
+            0.0,
+            0.6
+          ]
+        }
+      },
+      "layers": [
+        0
+      ],
+      "render": {
+        "group": 0.9,
+        "per_model": 1.0
+      }
+    },
+    "fill": {
+      "help": "the prop filled up to a level - a bar graph, a rising tide, a spoke lit to a point; mostly for presets (position) and accents",
+      "family": "level",
+      "inertia": 0.6,
+      "music_fit": {
+        "energy": 0.6,
+        "beat": 0.6,
+        "tempo": 0.5,
+        "sustained": 0.4,
+        "melody": 0.6
+      },
+      "model_fit": {
+        "default": 0.4,
+        "LINEAR": 0.8,
+        "RADIAL": 0.7,
+        "SURFACE_2D": 0.6,
+        "CONE": 0.6
+      },
+      "section_affinity": {
+        "build": 0.8,
+        "verse": 0.5,
+        "chorus": 0.5
+      },
+      "style_affinity": {
+        "electronic": 0.7,
+        "rock": 0.6
+      },
+      "parameters": {
+        "position": {
+          "driver": "energy",
+          "range": [
+            0.3,
+            1.0
+          ]
+        },
+        "direction": {
+          "choices": [
+            "up",
+            "down"
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 0.9,
+        "per_model": 1.0
+      }
+    },
+    "vu_meter": {
+      "help": "xLights draws the audio itself (volume bars, a spectrogram or the waveform) - an EQ look; follows every note without seqtool timing it",
+      "family": "audio",
+      "inertia": 0.7,
+      "music_fit": {
+        "energy": 0.75,
+        "beat": 0.8,
+        "tempo": 0.6,
+        "sustained": 0.3,
+        "drums": 0.8
+      },
+      "model_fit": {
+        "default": 0.3,
+        "SURFACE_2D": 0.9,
+        "LINEAR": 0.5
+      },
+      "section_affinity": {
+        "chorus": 0.6,
+        "drop": 0.8,
+        "build": 0.6,
+        "intro": 0.2,
+        "outro": 0.2
+      },
+      "style_affinity": {
+        "electronic": 0.85,
+        "pop": 0.6,
+        "rock": 0.6,
+        "ballad": 0.2
+      },
+      "parameters": {
+        "style": {
+          "choices": [
+            "volume_bars",
+            "spectrogram",
+            "waveform"
+          ]
+        },
+        "sensitivity": {
+          "driver": "energy",
+          "range": [
+            0.0,
+            0.2
+          ]
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "render": {
+        "group": 0.85,
+        "per_model": 1.0
+      }
+    },
+    "face": {
+      "help": "a singing face: the prop shows its face definition, the mouth following the words (xLights Faces, reading the phoneme layer of seqtool-lyrics). Never chosen by the scores - 'face use PROP FACE' turns it on for a prop",
+      "family": "face",
+      "inertia": 1.0,
+      "music_fit": {
+        "vocal": 0.9
+      },
+      "model_fit": {
+        "default": 0.0
+      },
+      "section_affinity": {},
+      "style_affinity": {},
+      "parameters": {},
+      "layers": [
+        0,
+        1
+      ],
+      "auto": false
+    },
+    "picture": {
+      "help": "a picture or an animated GIF on the prop (xLights Pictures) - never chosen by the scores: pin it with its file, e.g. 'pin Matrix @#2 picture file=pumpkin.gif' (a file in the show folder, or a path); loop=yes|no, scale=fit|none, speed (a GIF's frame rate), transparent=yes|no (black shows what is underneath), area=x,y,w,h",
+      "family": "picture",
+      "inertia": 1.0,
+      "music_fit": {},
+      "model_fit": {
+        "default": 0.5,
+        "SURFACE_2D": 1.0
+      },
+      "section_affinity": {},
+      "style_affinity": {},
+      "parameters": {
+        "file": {
+          "text": true,
+          "file": true
+        },
+        "scale": {
+          "choices": [
+            "fit",
+            "none"
+          ],
+          "default": "fit"
+        },
+        "loop": {
+          "choices": [
+            "yes",
+            "no"
+          ],
+          "default": "yes"
+        },
+        "transparent": {
+          "choices": [
+            "yes",
+            "no"
+          ],
+          "default": "yes"
+        },
+        "speed": {
+          "default": 0.5
+        }
+      },
+      "layers": [
+        0,
+        1
+      ],
+      "auto": false
+    },
+    "choreo": {
+      "help": "a choreography: a named plan of effects on the props inside the target ('define' keeps it) - never chosen by the scores: pin it with its name, e.g. 'pin \"1. ALL\" @#3 choreo name=\"both arms wave\"'; the target shows nothing of its own there, the parts play on a layer of their own",
+      "auto": false,
+      "family": "choreo",
+      "inertia": 1.0,
+      "music_fit": {},
+      "model_fit": {
+        "default": 1.0
+      },
+      "section_affinity": {},
+      "style_affinity": {},
+      "parameters": {
+        "name": {
+          "text": true
+        }
+      },
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  }
+}

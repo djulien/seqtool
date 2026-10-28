@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:seqtool:schema:models:1",
+  "title": "seqtool.models 1.x - analyzed props/groups: geometry + capabilities (adapter-neutral)",
+  "type": "object",
+  "$ref": "urn:seqtool:schema:common:1#/$defs/envelope",
+  "required": [
+    "models"
+  ],
+  "properties": {
+    "schema": {
+      "const": "seqtool.models"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "layout"
+      ],
+      "properties": {
+        "layout": {
+          "$ref": "urn:seqtool:schema:common:1#/$defs/inputRef"
+        }
+      }
+    },
+    "extent": {
+      "type": "number",
+      "description": "largest layout dimension, in layout units; *_norm values are divided by this"
+    },
+    "units": {
+      "type": "string"
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "supported_for_generation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "description": "model | group (open)"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "render_hint": {
+            "type": "string"
+          },
+          "shape_type": {
+            "type": "string"
+          },
+          "semantic": {
+            "type": "string"
+          },
+          "node_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "supported_for_generation": {
+            "type": "boolean"
+          },
+          "unsupported_reason": {
+            "type": "string"
+          },
+          "geometry_class": {
+            "type": "string",
+            "description": "LINEAR, ARC, RING, RADIAL, ORNAMENT, SURFACE_2D, CONE, VOLUME, IRREGULAR, SEMANTIC, FLOOD, MECHANICAL (open)"
+          },
+          "class_source": {
+            "type": "string",
+            "description": "semantic | geometry | members"
+          },
+          "geometry_guess": {
+            "type": "string"
+          },
+          "geometry": {
+            "type": "object",
+            "required": [
+              "dimensions",
+              "bounds",
+              "density"
+            ],
+            "properties": {
+              "dimensions": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              },
+              "bounds": {
+                "type": "object",
+                "description": "absolute, layout units"
+              },
+              "bounds_norm": {
+                "type": "object",
+                "description": "relative to layout extent"
+              },
+              "scale_norm": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+              },
+              "density": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+              }
+            }
+          },
+          "capabilities": {
+            "$ref": "urn:seqtool:schema:common:1#/$defs/unitMap"
+          },
+          "origin": {
+            "type": "object",
+            "description": "opaque adapter data, passed through"
+          },
+          "group_kind": {
+            "type": "string",
+            "description": "leaf | umbrella | submodel_view | single | empty (open)"
+          },
+          "render_buffer": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

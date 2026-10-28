@@ -1,0 +1,442 @@
+{
+  "_doc": "Reaction presets: 'on' a musical event, show 'effect' with 'params'. A target (react TARGET PRESET, or a name rule in models.json) can use one preset or a list - like conditional formatting, the first preset whose 'when' matches an event wins where they overlap. See 'help presets'. Your own presets go in seqtool-prefs/presets.json under the same key (same name = replaces the built-in one).",
+  "presets": {
+    "beat": {
+      "help": "a flash on every beat, brighter (accent colours) on the first beat of each bar",
+      "on": "beat",
+      "effect": "pulse",
+      "params": {
+        "start_level": {
+          "if": {
+            "downbeat": true
+          },
+          "then": 1.0,
+          "else": 0.6
+        },
+        "end_level": 0.0
+      },
+      "palette": {
+        "if": {
+          "downbeat": true
+        },
+        "then": "accent",
+        "else": "base"
+      }
+    },
+    "downbeat": {
+      "help": "a flash on the first beat of every bar",
+      "on": "downbeat",
+      "effect": "pulse",
+      "params": {
+        "start_level": 1.0,
+        "end_level": 0.0
+      },
+      "palette": "accent"
+    },
+    "onset": {
+      "help": "a flash on each note onset, cycling through the palette's colours",
+      "on": "onset",
+      "max_length": 0.4,
+      "effect": "pulse",
+      "params": {
+        "start_level": 1.0,
+        "end_level": 0.0
+      },
+      "palette": "accent",
+      "colors": "cycle"
+    },
+    "energy": {
+      "help": "brightness follows the loudness, beat by beat",
+      "on": "beat",
+      "effect": "pulse",
+      "params": {
+        "start_level": {
+          "from": "energy"
+        },
+        "end_level": {
+          "from": "energy_end"
+        }
+      },
+      "palette": "base",
+      "why": "loudness"
+    },
+    "beat-color": {
+      "help": "solid colour that steps to the next palette colour on every beat",
+      "on": "beat",
+      "effect": "color_wash",
+      "params": {
+        "transition_speed": 0.0,
+        "brightness": {
+          "if": {
+            "downbeat": true
+          },
+          "then": 1.0,
+          "else": 0.8
+        }
+      },
+      "palette": "base",
+      "colors": "cycle"
+    },
+    "beat-chase": {
+      "help": "a quick chase across the prop on every beat, alternating direction",
+      "on": "beat",
+      "effect": "chase",
+      "params": {
+        "speed": 1.0,
+        "width": 0.3,
+        "direction": {
+          "cycle": [
+            "forward",
+            "reverse"
+          ]
+        }
+      },
+      "palette": {
+        "if": {
+          "downbeat": true
+        },
+        "then": "accent",
+        "else": "base"
+      }
+    },
+    "downbeat-wipe": {
+      "help": "a wipe on the first beat of every bar, alternating direction",
+      "on": "downbeat",
+      "effect": "wipe",
+      "params": {
+        "speed": {
+          "from": "energy",
+          "range": [
+            0.4,
+            1.0
+          ]
+        },
+        "direction": {
+          "cycle": [
+            "left",
+            "right"
+          ]
+        }
+      },
+      "palette": "base"
+    },
+    "onset-sparkle": {
+      "help": "a short burst of sparkles on each note onset",
+      "on": "onset",
+      "max_length": 0.3,
+      "effect": "sparkles",
+      "params": {
+        "intensity": {
+          "from": "onset",
+          "range": [
+            0.6,
+            1.0
+          ]
+        },
+        "rate": 0.8
+      },
+      "palette": "accent"
+    },
+    "energy-speed": {
+      "help": "spirals whose rotation speed follows the loudness, bar by bar",
+      "on": "downbeat",
+      "effect": "spirals",
+      "params": {
+        "rotation_speed": {
+          "from": "energy",
+          "range": [
+            0.15,
+            1.0
+          ]
+        },
+        "arms": 0.4,
+        "thickness": 0.5,
+        "direction": "clockwise"
+      },
+      "palette": "base"
+    },
+    "energy-color": {
+      "help": "colour wash that switches to the accent palette when the music is loud, bar by bar",
+      "on": "downbeat",
+      "effect": "color_wash",
+      "params": {
+        "transition_speed": 0.2,
+        "brightness": {
+          "from": "energy",
+          "range": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "palette": {
+        "if": {
+          "energy": ">=0.7"
+        },
+        "then": "accent",
+        "else": "base"
+      }
+    },
+    "energy-density": {
+      "help": "twinkles that get denser as the music gets louder, bar by bar",
+      "on": "downbeat",
+      "effect": "twinkle",
+      "params": {
+        "density": {
+          "from": "energy",
+          "range": [
+            0.1,
+            0.9
+          ]
+        },
+        "rate": 0.5
+      },
+      "palette": "base"
+    },
+    "chorus-beat-chase": {
+      "help": "a quick chase on every beat, alternating direction (an example of 'when'; combine, e.g. chorus-beat-chase,beat)",
+      "on": "beat",
+      "when": {
+        "section": [
+          "chorus",
+          "drop"
+        ]
+      },
+      "effect": "chase",
+      "params": {
+        "speed": 1.0,
+        "width": 0.3,
+        "direction": {
+          "cycle": [
+            "forward",
+            "reverse"
+          ]
+        }
+      },
+      "palette": "accent"
+    },
+    "bar-steps": {
+      "help": "eighth-note flashes with an accent pattern across the bar (an example of 'split' and 'step')",
+      "on": "downbeat",
+      "split": 8,
+      "effect": "pulse",
+      "params": {
+        "start_level": {
+          "step": [
+            1.0,
+            0.3,
+            0.6,
+            0.3,
+            0.8,
+            0.3,
+            0.6,
+            0.3
+          ]
+        },
+        "end_level": 0.0
+      },
+      "palette": {
+        "if": {
+          "step": 0
+        },
+        "then": "accent",
+        "else": "base"
+      }
+    },
+    "tresillo": {
+      "help": "3+3+2 syncopated flashes in each bar (hits at 0%, 37.5%, 75%) - an example of CSS-style keyframes",
+      "on": "downbeat",
+      "effect": "pulse",
+      "params": {
+        "start_level": 1.0,
+        "end_level": 0.0
+      },
+      "keyframes": {
+        "0%": {
+          "start_level": 1.0
+        },
+        "37.5%": {
+          "start_level": 0.8
+        },
+        "75%": {
+          "start_level": 0.9
+        }
+      },
+      "palette": {
+        "if": {
+          "step": 0
+        },
+        "then": "accent",
+        "else": "base"
+      }
+    },
+    "spoke-bounce": {
+      "help": "a level that drops on the downbeat and bounces up and down through the bar (fill; use on a spoke submodel) - keyframes with glides",
+      "on": "downbeat",
+      "effect": "fill",
+      "params": {
+        "position": 0.0,
+        "direction": "up"
+      },
+      "animation-timing-function": "ease-out",
+      "keyframes": {
+        "0%": {
+          "position": 0.0
+        },
+        "25%": {
+          "position": 0.9
+        },
+        "37.5%": {
+          "position": 0.3
+        },
+        "62.5%": {
+          "position": 0.9
+        },
+        "75%": {
+          "position": 0.3
+        },
+        "87.5%": {
+          "position": 0.8
+        },
+        "to": {
+          "position": 0.0
+        }
+      },
+      "palette": "base"
+    },
+    "lyric-color": {
+      "help": "a new solid colour for each sung line (needs 'lyrics import')",
+      "on": "lyric",
+      "effect": "color_wash",
+      "params": {
+        "transition_speed": 0.0
+      },
+      "palette": "base",
+      "colors": "cycle"
+    },
+    "word-flash": {
+      "help": "a short flash on each sung word (needs 'lyrics import' with word timings)",
+      "on": "word",
+      "effect": "pulse",
+      "params": {
+        "start_level": 1.0,
+        "end_level": 0.0
+      },
+      "palette": "accent",
+      "max_length": 0.5
+    },
+    "kick": {
+      "help": "a flash on every kick drum hit (needs stems: 'run --stems')",
+      "on": "kick",
+      "max_length": 0.2,
+      "effect": "pulse",
+      "params": {
+        "start_level": {
+          "from": "strength",
+          "range": [
+            0.6,
+            1.0
+          ]
+        },
+        "end_level": 0.0
+      },
+      "palette": "base"
+    },
+    "snare": {
+      "help": "a white-hot accent flash on every snare hit (needs stems) - layer the drum kit on one prop with 'react PROP snare,kick,hat-sparkle'",
+      "on": "snare",
+      "max_length": 0.2,
+      "effect": "pulse",
+      "params": {
+        "start_level": 1.0,
+        "end_level": 0.0
+      },
+      "palette": "accent"
+    },
+    "hat-sparkle": {
+      "help": "a short sparkle on each hi-hat or cymbal hit (needs stems)",
+      "on": "hat",
+      "max_length": 0.12,
+      "effect": "sparkles",
+      "params": {
+        "intensity": {
+          "from": "strength",
+          "range": [
+            0.4,
+            1.0
+          ]
+        },
+        "rate": 0.9
+      },
+      "palette": "accent"
+    },
+    "bass-pulse": {
+      "help": "a glow on each bass note, brighter the louder the bass (needs stems)",
+      "on": "bass",
+      "effect": "pulse",
+      "params": {
+        "start_level": {
+          "from": "bassline",
+          "range": [
+            0.4,
+            1.0
+          ]
+        },
+        "end_level": 0.2
+      },
+      "palette": "base"
+    },
+    "melody-fill": {
+      "help": "a level that follows the tune: higher note, fuller prop (fill; good on trees, spokes, arches; needs stems)",
+      "on": "melody",
+      "effect": "fill",
+      "params": {
+        "position": {
+          "from": "height",
+          "range": [
+            0.15,
+            1.0
+          ]
+        },
+        "direction": "up"
+      },
+      "colors": {
+        "from": "height"
+      },
+      "palette": "base"
+    },
+    "melody-color": {
+      "help": "solid colour per melody note, picked by how high the note is - low notes first palette colour, high notes last (needs stems)",
+      "on": "melody",
+      "effect": "color_wash",
+      "params": {
+        "transition_speed": 0.0,
+        "brightness": 1.0
+      },
+      "colors": {
+        "from": "height"
+      },
+      "palette": "base"
+    },
+    "sing": {
+      "help": "sings with its face (the xLights Faces effect) while its voice's words are sung - 'face use PROP FACE [--voice NAME] [--area x,y,w,h]' says which face, voice and where; per section: 'react PROP sing @#3'",
+      "on": "sung",
+      "effect": "face",
+      "params": {
+        "face": "auto",
+        "track": "auto"
+      },
+      "palette": "base"
+    },
+    "cue-flash": {
+      "help": "a flash on each of your cues ('cue add @TIME') - with --over, on top of the prop's normal effects",
+      "on": "cue",
+      "effect": "pulse",
+      "params": {
+        "start_level": 1.0,
+        "end_level": 0.0
+      },
+      "palette": "accent"
+    }
+  }
+}

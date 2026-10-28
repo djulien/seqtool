@@ -1,0 +1,46 @@
+{
+  "_doc": "Music analysis settings. frame_interval is the output frame period in seconds (any multiple of 0.01). Changing it makes existing music.json files stale. sections.min_bars: shortest section allowed between detected boundaries, in bars (raise it for fewer, longer sections; the first and last section may be half as long). sections.min_strength: ignore boundaries weaker than this (0..1). Per-song edits ('sections' command) override detection. section_types: your own section type names, each mapped to a known type it should be treated like when effects are chosen (the name itself is kept for display). Known types: intro, verse, pre_chorus, chorus, bridge, breakdown, build, drop, solo, outro. sections.method: how boundary candidates are found - 'novelty' (changes in loudness and tone colour), 'laplacian' (harmony and repetition: spectral clustering, McFee & Ellis 2014) or 'combined' (both; the stronger evidence wins). sections.vocal_entry (0 = off, e.g. 0.6-0.8): where singing starts after a pause (vocal stem, imported lyrics), the nearest bar line becomes a section candidate of that strength. sections.snap: split/move/import align to the nearest 'bar' (default), 'beat', or 'none' (the exact time). sections.lyrics (1.0; 0 = off): with lyrics (imported, aligned or transcribed), where a repeated passage of words begins or ends and where the singing stops for 4 bars or more, the nearest bar line becomes a section candidate, and section types follow the words (chorus = words that come back; verse = words of its own; bridge = the one late passage with words of its own; breakdown = hardly any words). sections.lyric_min_bars (2): boundaries the lyrics show need only this many bars between them, so short passages the words mark off (a spoken lead-in) become sections. calls (0.24.49): call and response from cues tagged 'call' - gap_beats: a pause this long ends a phrase; onset: how strong a note must be to count in the calls seqtool finds; response: 'copy' (the call's timing, one offset later) or 'onsets' (what is heard there).",
+  "analysis": {
+    "frame_interval": 0.05,
+    "stems": false
+  },
+  "sections": {
+    "min_bars": 8,
+    "min_strength": 0.0,
+    "method": "combined",
+    "novelty_weight": 0.8,
+    "snap": "bar",
+    "vocal_entry": 0.0,
+    "lyrics": 1.0,
+    "lyric_min_bars": 2
+  },
+  "section_types": {
+    "interlude": "bridge",
+    "instrumental": "solo",
+    "setup": "build",
+    "buildup": "build",
+    "hook": "chorus",
+    "refrain": "chorus",
+    "prechorus": "pre_chorus",
+    "postchorus": "chorus",
+    "post_chorus": "chorus",
+    "tag": "outro",
+    "coda": "outro",
+    "ending": "outro",
+    "break": "breakdown",
+    "middle8": "bridge",
+    "rap": "verse"
+  },
+  "display": {
+    "_doc": "How the GUI and timeline page colour the waveform when a vocal stem was used: not singing = instrumental (blue); singing with the voice within vocal_lead_db of the whole mix = vocals (green); singing under a louder band = mixed (teal). 'Singing' = the stem's level above vocal_gate_db (dBFS; 'auto' = 10 dB above the stem's quiet level between vocal lines, per song), with gaps between words up to vocal_gap s bridged. Passages shorter than min_region s are merged into their longer neighbour. 'inspect vocals' shows the levels and the gate.",
+    "vocal_gate_db": "auto",
+    "vocal_lead_db": -6.0,
+    "vocal_gap": 1.0,
+    "min_region": 1.0
+  },
+  "calls": {
+    "gap_beats": 2.0,
+    "onset": 0.5,
+    "response": "copy"
+  }
+}

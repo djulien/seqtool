@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:seqtool:schema:music:1",
+  "title": "seqtool.music 1.x - measurement-level audio analysis",
+  "description": "Measurements only; no creative interpretation. Frames are COLUMNAR: frame i is at frames.start + i*frame_interval. Fields ending _norm are normalised per song (0..1); absolute measures carry units in their names (e.g. rms_dbfs).",
+  "type": "object",
+  "$ref": "urn:seqtool:schema:common:1#/$defs/envelope",
+  "required": [
+    "audio",
+    "analysis"
+  ],
+  "properties": {
+    "schema": {
+      "const": "seqtool.music"
+    },
+    "source": {
+      "$ref": "urn:seqtool:schema:common:1#/$defs/fileRef"
+    },
+    "audio": {
+      "type": "object",
+      "required": [
+        "duration",
+        "sample_rate",
+        "channels"
+      ],
+      "properties": {
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sample_rate": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "channels": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "format": {
+          "type": "string"
+        },
+        "codec": {
+          "type": "string"
+        },
+        "bit_depth": {
+          "type": "integer"
+        },
+        "loudness_lufs": {
+          "type": "number"
+        },
+        "true_peak_dbtp": {
+          "type": "number"
+        }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "required": [
+        "frame_interval",
+        "summary",
+        "frames",
+        "events"
+      ],
+      "properties": {
+        "frame_interval": {
+          "type": "number",
+          "minimum": 0.001
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "tempo": {
+              "type": "object",
+              "required": [
+                "bpm"
+              ],
+              "properties": {
+                "bpm": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "confidence": {
+                  "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+                }
+              }
+            },
+            "key": {
+              "type": "object",
+              "properties": {
+                "root": {
+                  "type": "string"
+                },
+                "mode": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+                }
+              }
+            },
+            "energy": {
+              "type": "object"
+            },
+            "spectral": {
+              "type": "object"
+            },
+            "vocal": {
+              "type": "object"
+            },
+            "dynamic_range_db": {
+              "type": "number"
+            }
+          }
+        },
+        "frames": {
+          "type": "object",
+          "required": [
+            "start",
+            "count",
+            "fields"
+          ],
+          "properties": {
+            "start": {
+              "type": "number",
+              "minimum": 0
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fields": {
+              "type": "object",
+              "required": [
+                "energy_norm"
+              ],
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "events": {
+          "type": "object",
+          "required": [
+            "beats"
+          ],
+          "properties": {
+            "beats": {
+              "type": "array",
+              "items": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/timedEvent"
+              }
+            },
+            "downbeats": {
+              "type": "array",
+              "items": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/timedEvent"
+              }
+            },
+            "onsets": {
+              "type": "array",
+              "items": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/timedEvent"
+              }
+            }
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "description": "Detected structural boundaries; unlabeled (labels are classification).",
+          "items": {
+            "type": "object",
+            "required": [
+              "time"
+            ],
+            "properties": {
+              "time": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+              },
+              "strength": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+              },
+              "confidence": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/unit"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

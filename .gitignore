@@ -1,3 +1,11 @@
+#my stuff
+seqtool-out/
+seqtool-prefs/
+tests/fixtures/
+DESIGN.md
+HANDOFF.md
+*-LOCAL
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

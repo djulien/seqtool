@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:seqtool:schema:layout:1",
+  "title": "seqtool.layout 1.x - generic display layout (adapter-neutral)",
+  "description": "Props are described by generic parametric shapes (see seqtool/layout/shapes.py). 'origin' is opaque adapter data (e.g. the xLights model name/type) carried through untouched so an output adapter can map back.",
+  "type": "object",
+  "$ref": "urn:seqtool:schema:common:1#/$defs/envelope",
+  "required": [
+    "units",
+    "props",
+    "groups"
+  ],
+  "properties": {
+    "schema": {
+      "const": "seqtool.layout"
+    },
+    "units": {
+      "type": "string",
+      "description": "m, ft, in, or 'xlights' (world units)"
+    },
+    "props": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "shape"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "shape": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "params": {
+                "type": "object"
+              }
+            }
+          },
+          "transform": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "scale": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "rotation_deg": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "anchor": {
+                "type": "string",
+                "description": "'origin' (default) or 'center': shape is centred before scaling"
+              }
+            }
+          },
+          "semantic": {
+            "type": "string",
+            "description": "optional hint: tree, arch, matrix, spinner, star, wreath, roofline, face, character, flood, moving_head, ... (open)"
+          },
+          "controllable": {
+            "type": "boolean",
+            "description": "false for props the generator must not drive (DMX/mechanical, dev/placeholder models, shadows)"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "origin": {
+            "type": "object"
+          },
+          "skip_reason": {
+            "type": "string"
+          },
+          "render_buffer": {
+            "type": "object",
+            "description": "the grid effects are rendered on (columns x rows [x layers]), as opposed to the physical/preview size given by shape+transform",
+            "properties": {
+              "columns": {
+                "type": "integer"
+              },
+              "rows": {
+                "type": "integer"
+              },
+              "layers": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "members"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "render_hint": {
+            "type": "string",
+            "description": "as_one (one combined canvas) | per_prop (effect repeated on each member) | stacked (members side by side; effects sweep across them) (open)"
+          },
+          "origin": {
+            "type": "object"
+          },
+          "structure": {
+            "type": "object",
+            "description": "how the group is built: kind (leaf | umbrella | submodel_view | single | empty), child groups, submodel refs, unresolved names",
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "groups": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "submodels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "missing": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "views": {
+      "type": "object",
+      "description": "named ordered element lists from the source tool (e.g. xLights sequencer views)",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "default_view": {
+      "type": "string"
+    }
+  }
+}

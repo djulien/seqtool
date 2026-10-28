@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:seqtool:schema:validation:1",
+  "title": "seqtool.validation 1.x - structural errors and quality diagnostics",
+  "type": "object",
+  "$ref": "urn:seqtool:schema:common:1#/$defs/envelope",
+  "required": [
+    "result",
+    "summary",
+    "issues"
+  ],
+  "properties": {
+    "schema": {
+      "const": "seqtool.validation"
+    },
+    "result": {
+      "type": "string",
+      "description": "ok | warning | error (open)"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "errors",
+        "warnings",
+        "info"
+      ],
+      "properties": {
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warnings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "info": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "severity",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "severity": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$"
+          },
+          "message": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "time": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+              },
+              "end": {
+                "$ref": "urn:seqtool:schema:common:1#/$defs/seconds"
+              }
+            }
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "description": "adjustments for the next matchup iteration",
+      "properties": {
+        "iteration": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "targets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "change_penalty_scale": {
+                "type": "number",
+                "minimum": 0
+              },
+              "effect_preference_scale": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "section_effect_scale": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "weak_boundaries": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "converged": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

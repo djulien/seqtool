@@ -1,0 +1,314 @@
+{
+  "_doc": "How each generic matchup parameter is applied using the kit's learned observations.\nscale: value v (0..1) placed between the learned default and the learned extreme (checkbox-like 0/1 settings turn on at v >= 0.5). span [a,b]: only that fraction of the default->extreme range is used.\nrate: for settings that count repetitions over the whole effect (Rotations, Cycles, Count). The value is a RATE per 'second', 'beat' or 'bar' (range [lo,hi], chosen by v) multiplied by the effect's length in those units, so a 2-bar chase and a 60 s sign border move at the same speed. Results above the learned extreme are clamped.\nchoice: generic value -> kit step ('default' = leave as is). If a choice step sets a numeric key already set by a scale/rate parameter, only its sign is applied (Spirals Movement).\nassume: values xLights doesn't store (e.g. defaults it omits, or a field that saved blank) - {\"KEY\": {\"default\": x, \"extreme\": y}}.\nOverride any of this in seqtool-prefs/xlights.json under param_map. invert: the parameter runs the other way along the learned step (1 = the default end).\nrange [lo,hi]: the value v (0..1) is placed between these absolute values (the kit step only tells which setting it is).\nglides: a parameter given as {\"ramp\": [a, b]} or {\"curve\": [[t, y], ...]} (keyframes, a pin's a..b, a choreography) is written as an xLights value curve on that setting once the kit has learned value curves (0.24.48; a ramp, or a custom curve) - else as a run of short effects stepping from a to b.\ntext: the learned setting is set to the parameter's own text (a face name, a timing track name).",
+  "color_wash": {
+    "transition_speed": {
+      "scale": "transition_speed",
+      "rate": {
+        "per": "bar",
+        "range": [
+          0.05,
+          0.5
+        ]
+      }
+    }
+  },
+  "pulse": {
+    "intensity": {
+      "scale": "intensity",
+      "span": [
+        0,
+        0.4
+      ]
+    },
+    "decay": {
+      "scale": "decay"
+    },
+    "start_level": {
+      "scale": "intensity",
+      "invert": true
+    },
+    "end_level": {
+      "scale": "decay",
+      "invert": true
+    }
+  },
+  "chase": {
+    "speed": {
+      "scale": "speed",
+      "rate": {
+        "per": "bar",
+        "range": [
+          0.25,
+          2.0
+        ]
+      }
+    },
+    "width": {
+      "scale": "width",
+      "span": [
+        0,
+        0.6
+      ]
+    },
+    "direction": {
+      "choice": {
+        "forward": "default",
+        "reverse": "direction",
+        "bounce": "direction_bounce"
+      }
+    }
+  },
+  "bars": {
+    "speed": {
+      "scale": "speed",
+      "rate": {
+        "per": "bar",
+        "range": [
+          0.125,
+          1.0
+        ]
+      }
+    },
+    "count": {
+      "scale": "count",
+      "span": [
+        0,
+        0.5
+      ]
+    },
+    "direction": {
+      "choice": {
+        "up": "default",
+        "down": "direction",
+        "expand": "direction_expand"
+      }
+    }
+  },
+  "wipe": {
+    "speed": {
+      "scale": "speed",
+      "span": [
+        0,
+        0.5
+      ]
+    },
+    "direction": {
+      "choice": {
+        "left": "default",
+        "right": "direction",
+        "center_out": "default",
+        "edges_in": "direction"
+      }
+    }
+  },
+  "spirals": {
+    "rotation_speed": {
+      "scale": "rotation_speed",
+      "span": [
+        0,
+        0.4
+      ]
+    },
+    "thickness": {
+      "scale": "thickness",
+      "span": [
+        0.2,
+        0.8
+      ]
+    },
+    "arms": {
+      "scale": "arms",
+      "span": [
+        0,
+        0.5
+      ]
+    },
+    "direction": {
+      "choice": {
+        "clockwise": "direction",
+        "counterclockwise": "default"
+      }
+    }
+  },
+  "pinwheel": {
+    "rotation_speed": {
+      "scale": "rotation_speed",
+      "span": [
+        0,
+        0.5
+      ]
+    },
+    "arms": {
+      "scale": "arms",
+      "span": [
+        0,
+        0.5
+      ]
+    },
+    "direction": {
+      "choice": {
+        "clockwise": "default",
+        "counterclockwise": "direction"
+      }
+    }
+  },
+  "twinkle": {
+    "density": {
+      "scale": "density",
+      "span": [
+        0,
+        0.6
+      ]
+    },
+    "rate": {
+      "scale": "rate"
+    }
+  },
+  "sparkles": {
+    "intensity": {
+      "scale": "intensity"
+    },
+    "rate": {
+      "scale": "rate",
+      "rate": {
+        "per": "beat",
+        "range": [
+          0.5,
+          4.0
+        ]
+      }
+    }
+  },
+  "meteors": {
+    "speed": {
+      "scale": "speed",
+      "span": [
+        0,
+        0.6
+      ]
+    },
+    "count": {
+      "scale": "count",
+      "span": [
+        0,
+        0.5
+      ]
+    },
+    "trail": {
+      "scale": "trail",
+      "span": [
+        0,
+        0.7
+      ]
+    },
+    "direction": {
+      "choice": {
+        "down": "default",
+        "up": "direction",
+        "explode": "direction_explode"
+      }
+    }
+  },
+  "fire": {
+    "height": {
+      "scale": "height"
+    },
+    "growth": {
+      "scale": "growth",
+      "rate": {
+        "per": "bar",
+        "range": [
+          0,
+          0.5
+        ]
+      }
+    }
+  },
+  "fill": {
+    "position": {
+      "scale": "position",
+      "range": [
+        0,
+        100
+      ]
+    },
+    "band": {
+      "scale": "band",
+      "range": [
+        0,
+        100
+      ]
+    },
+    "direction": {
+      "choice": {
+        "up": "default",
+        "down": "direction_down"
+      }
+    }
+  },
+  "vu_meter": {
+    "style": {
+      "choice": {
+        "level": "type_level",
+        "waveform": "type_waveform",
+        "volume_bars": "type_volume_bars",
+        "spectrogram": "type_spectrogram"
+      }
+    },
+    "sensitivity": {
+      "scale": "sensitivity"
+    }
+  },
+  "assume": {
+    "E_TEXTCTRL_ColorWash_Cycles": {
+      "default": "1.0",
+      "extreme": "9.9",
+      "why": "xLights 2025.13 blanks the field above 9.9"
+    },
+    "E_TEXTCTRL_Eff_On_Start": {
+      "default": "100"
+    },
+    "E_TEXTCTRL_Eff_On_End": {
+      "default": "100"
+    },
+    "E_TEXTCTRL_Fire_GrowthCycles": {
+      "extreme": "20.0",
+      "why": "saved blank at maximum"
+    }
+  },
+  "face": {
+    "face": {
+      "text": "face_definition"
+    },
+    "track": {
+      "text": "timing_track"
+    }
+  },
+  "picture": {
+    "file": {
+      "text": "file",
+      "path": true
+    },
+    "scale": {
+      "choice": {
+        "fit": "scale_fit",
+        "none": "default"
+      }
+    },
+    "loop": {
+      "choice": {
+        "yes": "loop_gif",
+        "no": "default"
+      }
+    },
+    "transparent": {
+      "choice": {
+        "yes": "transparent_black",
+        "no": "default"
+      }
+    },
+    "speed": {
+      "scale": "gif_speed"
+    }
+  }
+}

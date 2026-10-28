@@ -1,0 +1,352 @@
+{
+  "_doc": "Steps for the live xLights kit wizard. One working sequence file; after each step the user saves and the wizard checks the file immediately. For a change step the wizard looks at the right-most effect of that type and compares it with both the previous step and the effect's defaults, keeping the smaller difference - so the user may keep editing the same effect or add a fresh copy for each step. Labels are from recent xLights; 'aka' gives alternate names. kit_version is bumped whenever the steps change; min_compatible is the oldest kit_version whose results can still be used as-is (older ones must be re-trained). 'xlights-kit --update' learns only the steps a version's training doesn't have yet (e.g. after a kit_version bump).",
+  "kit_version": 16,
+  "effects": [
+    {
+      "effect": "Color Wash",
+      "generic": "color_wash",
+      "variants": [
+        {
+          "param": "transition_speed",
+          "do": "Count (aka Cycles): set to its maximum"
+        },
+        {
+          "param": "fade_vertical",
+          "do": "tick Vertical Fade"
+        },
+        {
+          "param": "fade_horizontal",
+          "do": "tick Horizontal Fade"
+        }
+      ]
+    },
+    {
+      "effect": "On",
+      "generic": "pulse",
+      "variants": [
+        {
+          "param": "intensity",
+          "do": "Start Intensity: set to its minimum (0)"
+        },
+        {
+          "param": "decay",
+          "do": "End Intensity: set to its minimum (0)"
+        },
+        {
+          "param": "subbuffer_left_half",
+          "do": "Buffer tab (beside Color / Layer Blending), Sub-Buffer: right-click it > Halves > Left Half (where a singing face goes on a matrix)"
+        },
+        {
+          "param": "subbuffer_middle_third",
+          "do": "Sub-Buffer again: right-click it > Thirds > Middle Third"
+        },
+        {
+          "param": "subbuffer_bottom_half",
+          "do": "Sub-Buffer again: right-click it > Halves > Bottom Half"
+        }
+      ]
+    },
+    {
+      "effect": "Single Strand",
+      "generic": "chase",
+      "variants": [
+        {
+          "param": "speed",
+          "do": "Cycles: set to its maximum"
+        },
+        {
+          "param": "width",
+          "do": "Chase Size: set to its maximum"
+        },
+        {
+          "param": "count",
+          "do": "Number Chases: set to its maximum"
+        },
+        {
+          "param": "direction",
+          "do": "Chase Type: Right-Left"
+        },
+        {
+          "param": "direction_bounce",
+          "do": "Chase Type: Bounce from Left"
+        }
+      ]
+    },
+    {
+      "effect": "Bars",
+      "generic": "bars",
+      "variants": [
+        {
+          "param": "count",
+          "do": "Palette Rep: set to its maximum"
+        },
+        {
+          "param": "speed",
+          "do": "Cycles: set to its maximum"
+        },
+        {
+          "param": "direction",
+          "do": "Direction: down"
+        },
+        {
+          "param": "direction_expand",
+          "do": "Direction: expand"
+        }
+      ]
+    },
+    {
+      "effect": "Curtain",
+      "generic": "wipe",
+      "variants": [
+        {
+          "param": "direction",
+          "do": "Curtain Edge: right"
+        },
+        {
+          "param": "speed",
+          "do": "Repeat: turn on, or set to its maximum"
+        }
+      ]
+    },
+    {
+      "effect": "Spirals",
+      "generic": "spirals",
+      "variants": [
+        {
+          "param": "arms",
+          "do": "Palette Rep: set to its maximum"
+        },
+        {
+          "param": "rotation_speed",
+          "do": "Movement: set to its maximum"
+        },
+        {
+          "param": "direction",
+          "do": "Movement: set to its minimum (or max negative) value"
+        },
+        {
+          "param": "thickness",
+          "do": "Thickness: set to its maximum"
+        }
+      ]
+    },
+    {
+      "effect": "Pinwheel",
+      "generic": "pinwheel",
+      "variants": [
+        {
+          "param": "arms",
+          "do": "# Arms: set to its maximum"
+        },
+        {
+          "param": "rotation_speed",
+          "do": "Speed: set to its maximum"
+        },
+        {
+          "param": "direction",
+          "do": "Rotation: switch to the other direction"
+        }
+      ]
+    },
+    {
+      "effect": "Twinkle",
+      "generic": "twinkle",
+      "variants": [
+        {
+          "param": "density",
+          "do": "Count (aka percentage): set to its maximum"
+        },
+        {
+          "param": "rate",
+          "do": "Twinkle Steps: set to its minimum"
+        }
+      ]
+    },
+    {
+      "effect": "Shimmer",
+      "generic": "sparkles",
+      "variants": [
+        {
+          "param": "intensity",
+          "do": "Duty Factor: set to its maximum"
+        },
+        {
+          "param": "rate",
+          "do": "Cycles: set to its maximum"
+        }
+      ]
+    },
+    {
+      "effect": "Meteors",
+      "generic": "meteors",
+      "variants": [
+        {
+          "param": "count",
+          "do": "Count: set to its maximum"
+        },
+        {
+          "param": "trail",
+          "do": "Trail Length: set to its maximum"
+        },
+        {
+          "param": "speed",
+          "do": "Speed: set to its maximum"
+        },
+        {
+          "param": "direction",
+          "do": "Direction/Effect: Up"
+        },
+        {
+          "param": "direction_explode",
+          "do": "Direction/Effect: Explode"
+        }
+      ]
+    },
+    {
+      "effect": "Fire",
+      "generic": "fire",
+      "variants": [
+        {
+          "param": "height",
+          "do": "Height: set to its maximum"
+        },
+        {
+          "param": "growth",
+          "do": "Growth Cycles: set to its maximum (not 'Grow with music')"
+        }
+      ]
+    },
+    {
+      "effect": "Fill",
+      "generic": "fill",
+      "variants": [
+        {
+          "param": "position",
+          "do": "Position: drag it to any other value"
+        },
+        {
+          "param": "band",
+          "do": "Band Size: drag it to any other value"
+        },
+        {
+          "param": "direction_down",
+          "do": "Direction: Down (or, if it already says Down: Up)"
+        }
+      ]
+    },
+    {
+      "effect": "VU Meter",
+      "generic": "vu_meter",
+      "variants": [
+        {
+          "param": "type_level",
+          "do": "Type: Level Bar"
+        },
+        {
+          "param": "sensitivity",
+          "do": "Sensitivity (available while Level Bar is selected): set to its maximum"
+        },
+        {
+          "param": "type_waveform",
+          "do": "Type: Waveform (if that is its default, setting it back is fine)"
+        },
+        {
+          "param": "type_volume_bars",
+          "do": "Type: Volume Bars"
+        },
+        {
+          "param": "type_spectrogram",
+          "do": "Type: Spectrogram (if that is its default, setting it back is fine)"
+        }
+      ]
+    },
+    {
+      "effect": "Off",
+      "generic": "dark",
+      "variants": []
+    },
+    {
+      "effect": "Faces",
+      "generic": "face",
+      "variants": [
+        {
+          "param": "face_definition",
+          "do": "Face Definition: choose one of the model's faces (put this Faces effect on a model that HAS a singing face; any face other than the one shown)"
+        },
+        {
+          "param": "timing_track",
+          "do": "Phoneme Track (the timing track the face follows): choose a lyrics timing track. xLights only lists a timing track that has been broken down: add a timing track, type any words into one of its marks (or right-click it > Import Lyrics), then right-click the track > Breakdown Phrases and again > Breakdown Words; then choose it here"
+        }
+      ]
+    },
+    {
+      "effect": "Pictures",
+      "generic": "picture",
+      "variants": [
+        {
+          "param": "file",
+          "do": "Filename (the file picker): choose any picture file - an animated GIF is best"
+        },
+        {
+          "param": "scale_fit",
+          "do": "Scaling: Scale To Fit"
+        },
+        {
+          "param": "loop_gif",
+          "do": "tick Loop GIF"
+        },
+        {
+          "param": "transparent_black",
+          "do": "tick Transparent Black"
+        },
+        {
+          "param": "gif_speed",
+          "do": "Frame Rate Adj (the GIF's speed): set to its maximum"
+        }
+      ]
+    }
+  ],
+  "structure": [
+    {
+      "kind": "palette",
+      "do": "Add a Color Wash whose palette has exactly 3 colours enabled: pure red, pure green, pure blue."
+    },
+    {
+      "kind": "layers",
+      "do": "On the same model, add a second effect layer and put any effect on it, overlapping an effect on layer 1."
+    },
+    {
+      "kind": "group",
+      "do": "Add a Color Wash (defaults) to any model GROUP."
+    },
+    {
+      "kind": "group_render",
+      "do": "Add an effect to any model GROUP; in its Layer Settings (the Buffer tab) set Render Style to 'Per Model Default'."
+    },
+    {
+      "kind": "value_curve",
+      "do": "On any effect, open the value curve of one of its sliders (the small button beside a slider, e.g. Bars' Palette Rep or Color Wash's Count): Type 'Ramp', the start at the slider's LOWEST value and the end at its HIGHEST; OK."
+    },
+    {
+      "kind": "value_curve_down",
+      "do": "Open that value curve again and swap them: the start at the HIGHEST value, the end at the LOWEST; OK."
+    },
+    {
+      "kind": "value_curve_custom",
+      "do": "Open that value curve again: Type 'Custom'; click once in the middle of the curve to add a point and drag that point to the very TOP; OK."
+    },
+    {
+      "kind": "rotation",
+      "do": "On any effect: Layer Settings > the Roto-Zoom tab > the Z-axis rotation slider (it turns the effect flat, in the plane of the prop - not X or Y, which tilt it): drag it to its HIGHEST value."
+    },
+    {
+      "kind": "timing",
+      "do": "Add a new timing track with at least 3 marks (any kind, any name - e.g. a metronome track)."
+    },
+    {
+      "kind": "submodel",
+      "do": "Last step, and the only one on a submodel: add an On effect to a SUBMODEL row - in the sequencer, expand a model that has submodels (the small arrow next to its name) and put On on one of its submodel rows."
+    }
+  ],
+  "min_compatible": 4
+}

@@ -1,0 +1,20 @@
+{
+  "_doc": "User intent, kept separate from analyzed capabilities. Every group has a role: 'top' = takes over whole sections (the top pass) - only the widest top group is used (scoring.passes.top.max_groups, default 1; 'groups' warns about groups you made top that won't be), 'unit' = sequence it as one target in the main pass, 'detail' = a collection used to reshape/re-order props, handled in the per-prop detail pass, 'unused' = not sequenced (called 'off' before 0.16.1; still accepted). group_roles gives the default role per group kind ('auto' = guessed from the layout: a whole-yard group is top, a group with the same props as a larger one is unused, a group of submodels is a unit that plays in place of the props it is part of (0.20.5; set it to 'detail' for accents on top of the props instead); 'groups' shows each guess and why); targets.<group>.role overrides it ('seqtool groups --ask' edits these). Members of a 'unit' group are not driven individually unless drive_members_of_enabled_groups is true or the member has drive_individually: true. Overlapping unit groups: the largest is chosen first, smaller overlapping ones are skipped (reported). rules: settings by name pattern (regular expression), e.g. {\"match\": \"(?i)flood\", \"effect_preferences\": {\"color_wash\": 1.5}} or {\"match\": \"(?i)^arch\", \"react\": \"beat-chase\"}; every matching rule applies in order, targets.<name> wins over rules ('seqtool rules -h'). loose_props_to_umbrella (0.20.7, default true): props that no unit group covers are sequenced through the closest umbrella group whose props are all loose (not the whole-yard group), instead of each on its own. max_list (0.20.7, default 8): how many names 'groups NAME' lists before '... and N more' (0 = all; --all shows everything).",
+  "defaults": {
+    "enabled": true,
+    "allowed_effects": null,
+    "effect_preferences": {}
+  },
+  "group_roles": {
+    "leaf": "unit",
+    "umbrella": "auto",
+    "submodel_view": "auto",
+    "single": "unused",
+    "empty": "unused"
+  },
+  "drive_members_of_enabled_groups": false,
+  "loose_props_to_umbrella": true,
+  "max_list": 8,
+  "targets": {},
+  "rules": []
+}

@@ -1,0 +1,929 @@
+{
+  "_doc": "What 'direct' understands (0.24.33): plain-language direction -> seqtool commands, without a connection to Claude. Each intent: 'say' = phrases that mean it (any case; a word also matches its longer forms: 'calm' matches 'calmer'; '{effect}' = an effect name is in the text), 'not' = phrases that rule it out, 'do' = the commands (slots below; a line starting with '?' is left out when one of its slots isn't in the text), 'means' = what it does, in a few words, 'check' = commands that show it took. Slots: {where} the section named ('@#3', with ' --only' for 'the second chorus'), {at} the same without --only, {prop} the props / groups named (one command each), {words} the quoted words, {time} a moment ('at 1:05', '@vocals'), {effect} an effect name (or a word in 'effect_words'), {hi} / {lo} a value for 'more' / 'less' ('a little', 'a lot' change it), {before_vocals} each section before the singing (the one it starts in: until=@vocals), {grow} / {shrink} 'sections move' commands for 'by 2 bars' / 'by 4 beats' / 'by 3 s'; '@WORD' as a time = where that word is sung. '{slot|default}': the default when the text doesn't have it ('yard' = the group holding the most props, '--song' = this song). Mistyped words are put right when they are close to a word it knows (general.fuzzy); 'plain_words' are never taken as typos. Add your own in seqtool-prefs/intents.json under \"intents\" (a new name, or an existing one to change it).",
+  "degree": {
+    "strong": [
+      "a lot",
+      "lots",
+      "much",
+      "way",
+      "very",
+      "really",
+      "far",
+      "totally",
+      "super"
+    ],
+    "mild": [
+      "a little",
+      "a bit",
+      "slightly",
+      "bit",
+      "touch",
+      "somewhat",
+      "tad"
+    ],
+    "hi": {
+      "mild": 0.65,
+      "normal": 0.8,
+      "strong": 0.95
+    },
+    "lo": {
+      "mild": 0.35,
+      "normal": 0.2,
+      "strong": 0.05
+    }
+  },
+  "yard_words": [
+    "whole yard",
+    "the yard",
+    "everything",
+    "all props",
+    "all the props",
+    "whole show",
+    "everyone",
+    "all of it",
+    "whole display",
+    "all the lights"
+  ],
+  "effect_words": {
+    "glow": "color_wash",
+    "glowing": "color_wash",
+    "wash": "color_wash",
+    "shimmer": "twinkle",
+    "twinkly": "twinkle",
+    "sparkle": "sparkles",
+    "spiral": "spirals",
+    "swirl": "spirals",
+    "meteor": "meteors",
+    "shooting stars": "meteors",
+    "flames": "fire",
+    "flame": "fire",
+    "burn": "fire",
+    "spin": "pinwheel",
+    "spinning": "pinwheel",
+    "wipe": "wipe",
+    "bars": "bars",
+    "stripes": "bars",
+    "fill up": "fill",
+    "vu": "vu_meter",
+    "level meter": "vu_meter",
+    "throb": "pulse",
+    "breathe": "pulse",
+    "breathing": "pulse"
+  },
+  "section_words": {
+    "refrain": "chorus",
+    "hook": "chorus",
+    "choruses": "chorus",
+    "verses": "verse",
+    "beginning": "intro",
+    "start": "intro",
+    "opening": "intro",
+    "ending": "outro",
+    "end": "outro",
+    "finale": "outro",
+    "solo": "instrumental",
+    "break": "instrumental",
+    "breakdown": "instrumental",
+    "middle 8": "bridge"
+  },
+  "minimum": 4,
+  "intents": {
+    "more-intense": {
+      "say": [
+        "bigger",
+        "more energy",
+        "more energetic",
+        "intense",
+        "punchier",
+        "punchy",
+        "more punch",
+        "exciting",
+        "more powerful",
+        "powerful",
+        "pump up",
+        "pumped",
+        "stronger",
+        "harder",
+        "more impact",
+        "bolder",
+        "more drama",
+        "dramatic",
+        "wilder",
+        "more wow",
+        "brighter",
+        "louder",
+        "explode",
+        "big finish",
+        "go big",
+        "more oomph",
+        "enlarge",
+        "expand",
+        "amplify",
+        "magnify",
+        "heighten",
+        "boost",
+        "beef up"
+      ],
+      "not": [
+        "less intense",
+        "too intense",
+        "too much",
+        "less energy",
+        "too bright",
+        "extend",
+        "lengthen",
+        "longer",
+        "{amount}"
+      ],
+      "do": [
+        "feel intensity {hi} {where}"
+      ],
+      "means": "more intense effects (chases, strobes, fire) win",
+      "check": [
+        "feel"
+      ]
+    },
+    "calmer": {
+      "say": [
+        "calm",
+        "gentle",
+        "softer",
+        "soft",
+        "quieter",
+        "quiet",
+        "less intense",
+        "too intense",
+        "mellow",
+        "subtle",
+        "tone down",
+        "toned down",
+        "relaxed",
+        "peaceful",
+        "dreamy",
+        "less energy",
+        "too much",
+        "too bright",
+        "smoother",
+        "smooth",
+        "serene",
+        "tender",
+        "lighter touch",
+        "restrained",
+        "understated",
+        "reduce",
+        "shrink",
+        "diminish",
+        "soften",
+        "lessen"
+      ],
+      "not": [
+        "too calm",
+        "too quiet",
+        "too soft",
+        "too subtle",
+        "shorten",
+        "shorter",
+        "{amount}"
+      ],
+      "do": [
+        "feel intensity {lo} {where}"
+      ],
+      "means": "calmer effects (washes, twinkles) win",
+      "check": [
+        "feel"
+      ]
+    },
+    "steadier": {
+      "say": [
+        "too busy",
+        "less busy",
+        "too jumpy",
+        "jumpy",
+        "frantic",
+        "too much going on",
+        "steadier",
+        "steady",
+        "changes too often",
+        "changes too much",
+        "hectic",
+        "chaotic",
+        "slow down",
+        "slower",
+        "less changing",
+        "longer effects",
+        "settle",
+        "settled",
+        "stable",
+        "flickery",
+        "twitchy",
+        "nervous"
+      ],
+      "do": [
+        "feel busy {lo}"
+      ],
+      "means": "effects change less often (longer, steadier effects)",
+      "check": [
+        "feel"
+      ]
+    },
+    "busier": {
+      "say": [
+        "busier",
+        "more busy",
+        "static",
+        "boring",
+        "more movement",
+        "more motion",
+        "more action",
+        "change more often",
+        "changes more often",
+        "more changes",
+        "livelier",
+        "lively",
+        "dull",
+        "more going on",
+        "faster",
+        "too steady",
+        "too slow",
+        "stuck",
+        "monotonous",
+        "repetitive",
+        "same effect too long"
+      ],
+      "not": [
+        "too busy",
+        "less busy"
+      ],
+      "do": [
+        "feel busy {hi}"
+      ],
+      "means": "effects change more often",
+      "check": [
+        "feel"
+      ]
+    },
+    "together": {
+      "say": [
+        "together",
+        "coordinated",
+        "in sync",
+        "unison",
+        "as one",
+        "synchronized",
+        "synchronised",
+        "same time",
+        "unified",
+        "matching",
+        "match each other",
+        "cohesive",
+        "all at once",
+        "too random"
+      ],
+      "not": [
+        "too together",
+        "less together"
+      ],
+      "do": [
+        "feel unison {hi}"
+      ],
+      "means": "more moments where the whole yard moves together",
+      "check": [
+        "feel"
+      ]
+    },
+    "apart": {
+      "say": [
+        "more variety",
+        "variety",
+        "each prop its own",
+        "independent",
+        "less uniform",
+        "apart",
+        "different from each other",
+        "too uniform",
+        "too similar",
+        "all the same",
+        "too together",
+        "less together",
+        "individual",
+        "varied",
+        "mix"
+      ],
+      "do": [
+        "feel unison {lo}"
+      ],
+      "means": "every prop more its own (fewer whole-yard moments)",
+      "check": [
+        "feel"
+      ]
+    },
+    "warmer": {
+      "say": [
+        "warmer",
+        "warm",
+        "reds",
+        "red",
+        "amber",
+        "orange",
+        "cozy",
+        "cosy",
+        "fiery colours",
+        "fiery colors",
+        "golden",
+        "too cold",
+        "too blue",
+        "sunset",
+        "autumn"
+      ],
+      "not": [
+        "too warm",
+        "less warm"
+      ],
+      "do": [
+        "feel warmth {hi}"
+      ],
+      "means": "colours pulled towards warm (reds, ambers)",
+      "check": [
+        "feel",
+        "palette"
+      ]
+    },
+    "cooler": {
+      "say": [
+        "cooler",
+        "cool colours",
+        "cool colors",
+        "blues",
+        "blue",
+        "icy",
+        "frosty",
+        "cold",
+        "too warm",
+        "wintry",
+        "wintery",
+        "colder",
+        "less warm",
+        "too red",
+        "ocean",
+        "arctic"
+      ],
+      "do": [
+        "feel warmth {lo}"
+      ],
+      "means": "colours pulled towards cool (blues)",
+      "check": [
+        "feel",
+        "palette"
+      ]
+    },
+    "dark": {
+      "say": [
+        "dark",
+        "black out",
+        "blackout",
+        "blacked out",
+        "turn off",
+        "switch off",
+        "no lights",
+        "nothing on",
+        "unlit",
+        "go dark",
+        "off",
+        "rest",
+        "not lit",
+        "sit out",
+        "silent"
+      ],
+      "not": [
+        "until the vocals",
+        "before the vocals",
+        "until the singing",
+        "before the singing",
+        "dark until",
+        "too dark"
+      ],
+      "do": [
+        "pin {prop|yard} {where} dark"
+      ],
+      "means": "the props black there (their groups don't light them)",
+      "check": [
+        "pin"
+      ]
+    },
+    "dark-until-vocals": {
+      "say": [
+        "until the vocals",
+        "before the vocals",
+        "until the singing",
+        "before the singing",
+        "dark until",
+        "until she sings",
+        "until he sings",
+        "until they sing",
+        "until the singer",
+        "until the voice",
+        "before the voice"
+      ],
+      "do": [
+        "pin {prop|yard} {before_vocals} dark"
+      ],
+      "means": "dark until the singing starts",
+      "check": [
+        "pin"
+      ]
+    },
+    "flash-words": {
+      "say": [
+        "flash",
+        "light up",
+        "on the word",
+        "on the words",
+        "when she sings",
+        "when he sings",
+        "when they sing",
+        "hit on",
+        "blink",
+        "pop on"
+      ],
+      "do": [
+        "react {prop|yard} word-flash --words {words} --over"
+      ],
+      "means": "a short flash on those sung words",
+      "check": [
+        "react"
+      ]
+    },
+    "follow-words": {
+      "say": [
+        "on the words",
+        "with the words",
+        "with the lyrics",
+        "to the lyrics",
+        "each word",
+        "every word",
+        "lyrics",
+        "words",
+        "sung words",
+        "follow the singing",
+        "with the singing",
+        "with the vocals"
+      ],
+      "unless": [
+        "words"
+      ],
+      "do": [
+        "react {prop|yard} word-flash {where|--song} --over"
+      ],
+      "means": "a short flash on every sung word",
+      "check": [
+        "react"
+      ]
+    },
+    "beat": {
+      "say": [
+        "on the beat",
+        "to the beat",
+        "with the beat",
+        "beat",
+        "pulse",
+        "pulsing",
+        "thump",
+        "rhythm",
+        "in time",
+        "bounce",
+        "bouncing",
+        "throb"
+      ],
+      "do": [
+        "react {prop|yard} beat {where|--song} --over"
+      ],
+      "means": "a pulse on every beat",
+      "check": [
+        "react"
+      ]
+    },
+    "chase": {
+      "say": [
+        "chase on the beat",
+        "chase to the beat",
+        "chase with the beat",
+        "chasing on the beat",
+        "chasing to the beat",
+        "beat chase",
+        "running lights",
+        "run around",
+        "race",
+        "racing"
+      ],
+      "do": [
+        "react {prop|yard} beat-chase {where|--song} --over"
+      ],
+      "means": "a chase that steps with the beat",
+      "check": [
+        "react"
+      ]
+    },
+    "kick": {
+      "say": [
+        "kick",
+        "kick drum",
+        "bass drum",
+        "drums"
+      ],
+      "do": [
+        "react {prop|yard} kick {where|--song} --over"
+      ],
+      "means": "a hit on each kick drum (needs the drum stem: 'stems')",
+      "check": [
+        "react"
+      ]
+    },
+    "snare": {
+      "say": [
+        "snare",
+        "snare drum",
+        "clap",
+        "claps"
+      ],
+      "do": [
+        "react {prop|yard} snare {where|--song} --over"
+      ],
+      "means": "a hit on each snare",
+      "check": [
+        "react"
+      ]
+    },
+    "bass": {
+      "say": [
+        "bass line",
+        "bassline",
+        "with the bass",
+        "to the bass",
+        "bass"
+      ],
+      "not": [
+        "bass drum"
+      ],
+      "do": [
+        "react {prop|yard} bass-pulse {where|--song} --over"
+      ],
+      "means": "a pulse with the bass line (needs the bass stem: 'stems')",
+      "check": [
+        "react"
+      ]
+    },
+    "build": {
+      "say": [
+        "build up",
+        "build",
+        "builds",
+        "swell",
+        "crescendo",
+        "rise",
+        "rising",
+        "grow",
+        "growing",
+        "ramp up",
+        "ramp"
+      ],
+      "do": [
+        "feel intensity {hi} {where}",
+        "react {prop|yard} energy-density {where|--song} --over"
+      ],
+      "means": "more intense there, and busier as the music gets louder",
+      "check": [
+        "feel",
+        "react"
+      ]
+    },
+    "cue": {
+      "say": [
+        "flash at",
+        "hit at",
+        "crash at",
+        "accent at",
+        "cue at",
+        "cymbal",
+        "crash",
+        "accent",
+        "bang",
+        "boom",
+        "hit",
+        "stab",
+        "impact at"
+      ],
+      "do": [
+        "cue add {time}",
+        "?react {prop} cue-flash --over"
+      ],
+      "means": "an extra hit at that moment for the props that react",
+      "check": [
+        "cue"
+      ]
+    },
+    "reroll": {
+      "say": [
+        "something different",
+        "try again",
+        "reroll",
+        "re-roll",
+        "different effects",
+        "change it up",
+        "don't like",
+        "dont like",
+        "shuffle",
+        "another option",
+        "other effects",
+        "mix it up",
+        "new look",
+        "try something else",
+        "not that",
+        "another one"
+      ],
+      "do": [
+        "reroll {prop?} {at}"
+      ],
+      "means": "new random choices (pins keep their effect)",
+      "check": []
+    },
+    "pin-effect": {
+      "say": [
+        "{effect}",
+        "use",
+        "show",
+        "switch to",
+        "change to",
+        "want"
+      ],
+      "need": [
+        "effect"
+      ],
+      "do": [
+        "pin {prop|yard} {where} {effect}"
+      ],
+      "means": "that effect there",
+      "check": [
+        "pin"
+      ],
+      "not": [
+        "{amount}"
+      ]
+    },
+    "sing": {
+      "say": [
+        "sing",
+        "singing face",
+        "mouth",
+        "lip sync",
+        "lipsync",
+        "lip-sync",
+        "face"
+      ],
+      "not": [
+        "until the singing",
+        "before the singing",
+        "when she sings",
+        "when he sings",
+        "when they sing"
+      ],
+      "do": [
+        "react {prop} sing {where|--song}"
+      ],
+      "means": "the prop's face sings the lyrics",
+      "check": [
+        "react"
+      ]
+    },
+    "undo": {
+      "say": [
+        "undo",
+        "take that back",
+        "revert",
+        "go back",
+        "put it back",
+        "undo that",
+        "as it was",
+        "cancel that"
+      ],
+      "do": [
+        "undo"
+      ],
+      "means": "the last change taken back",
+      "check": []
+    },
+    "reset-feel": {
+      "say": [
+        "back to normal",
+        "reset the feel",
+        "neutral",
+        "default feel",
+        "reset everything",
+        "seqtool's own choice"
+      ],
+      "do": [
+        "feel reset"
+      ],
+      "means": "every creative control back to neutral",
+      "check": [
+        "feel"
+      ]
+    },
+    "export": {
+      "say": [
+        "export",
+        "send to xlights",
+        "write the xsq",
+        "save for xlights",
+        "to xlights",
+        "into xlights"
+      ],
+      "do": [
+        "xlights-export"
+      ],
+      "means": "the .xsq written for xLights",
+      "check": []
+    },
+    "longer": {
+      "say": [
+        "enlarge",
+        "expand",
+        "extend",
+        "lengthen",
+        "longer",
+        "stretch",
+        "grow",
+        "bigger"
+      ],
+      "need": [
+        "where"
+      ],
+      "do": [
+        "{grow}"
+      ],
+      "means": "the section longer (its end later; the next section starts later)",
+      "check": [
+        "sections"
+      ]
+    },
+    "shorter": {
+      "say": [
+        "reduce",
+        "shrink",
+        "shorten",
+        "shorter",
+        "trim",
+        "cut",
+        "smaller"
+      ],
+      "need": [
+        "where"
+      ],
+      "do": [
+        "{shrink}"
+      ],
+      "means": "the section shorter (its end earlier)",
+      "check": [
+        "sections"
+      ]
+    }
+  },
+  "plain_words": [
+    "make",
+    "it",
+    "more",
+    "less",
+    "lights",
+    "light",
+    "look",
+    "looks",
+    "feel",
+    "feels",
+    "like",
+    "want",
+    "need",
+    "please",
+    "bit",
+    "lot",
+    "little",
+    "much",
+    "over",
+    "part",
+    "parts",
+    "song",
+    "show",
+    "time",
+    "where",
+    "there",
+    "here",
+    "them",
+    "they",
+    "those",
+    "these",
+    "some",
+    "now",
+    "again",
+    "also",
+    "just",
+    "really",
+    "quite",
+    "rather",
+    "kind",
+    "sort",
+    "maybe",
+    "could",
+    "should",
+    "would",
+    "can",
+    "will",
+    "fade",
+    "fades",
+    "slow",
+    "fast",
+    "color",
+    "colour",
+    "colors",
+    "colours",
+    "bright",
+    "dim",
+    "dimmer",
+    "by",
+    "seconds",
+    "second",
+    "bars",
+    "bar",
+    "beats",
+    "beat",
+    "measure",
+    "about",
+    "around",
+    "into",
+    "onto",
+    "after",
+    "before",
+    "until",
+    "while",
+    "from",
+    "than",
+    "then",
+    "one",
+    "two",
+    "three",
+    "four",
+    "half",
+    "him",
+    "her",
+    "his",
+    "she",
+    "he",
+    "we",
+    "us",
+    "our",
+    "my",
+    "me",
+    "you",
+    "your",
+    "yard",
+    "house",
+    "roof",
+    "tree",
+    "trees",
+    "star",
+    "stars",
+    "not",
+    "don't",
+    "dont",
+    "let",
+    "lets",
+    "keep",
+    "stay",
+    "same",
+    "other",
+    "another",
+    "way",
+    "good",
+    "great",
+    "nice",
+    "better",
+    "best",
+    "bad",
+    "worse",
+    "thing",
+    "things",
+    "everything",
+    "nothing",
+    "whole",
+    "section",
+    "sections",
+    "moment",
+    "there's",
+    "that's",
+    "it's",
+    "has",
+    "have",
+    "had",
+    "was",
+    "were",
+    "does",
+    "do"
+  ]
+}

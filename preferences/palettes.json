@@ -1,0 +1,14 @@
+{
+  "_doc": "Palette tendencies per style. The matchup picks deterministically (seeded) from the dominant styles; composer maps to xLights palette slots.",
+  "styles": {
+    "traditional_christmas": [["#FF0000", "#00C000", "#FFD700", "#FFFFFF"], ["#C00000", "#008000", "#FFFFFF"]],
+    "electronic": [["#00E5FF", "#7C00FF", "#FF00C8", "#0040FF"], ["#00FF9C", "#0080FF", "#FF00FF"]],
+    "rock": [["#FF2000", "#FF8000", "#FFFFFF", "#400000"], ["#FF0000", "#FFFFFF", "#202020"]],
+    "pop": [["#FF4FA0", "#00D0FF", "#FFE000", "#8040FF"]],
+    "ballad": [["#FFB070", "#B07CFF", "#70A0FF"], ["#FFFFFF", "#80C0FF"]],
+    "orchestral": [["#FFD700", "#FFFFFF", "#4060FF", "#A00020"]],
+    "ambient": [["#304080", "#40A0C0", "#80E0D0"]],
+    "unknown": [["#FF0000", "#00FF00", "#0000FF", "#FFFFFF"]]
+  },
+  "high_energy_accent": ["#FFFFFF"]
+}

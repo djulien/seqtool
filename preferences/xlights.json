@@ -1,0 +1,51 @@
+{
+  "_doc": "xLights input-adapter settings. Models matching any exclusion are imported but marked not controllable (with the reason), so they are reported rather than silently dropped. shadow_models: 'skip_shadow' (default, 0.20.2) leaves out models that have 'Shadow Model For' set and plans the models they shadow; 'sequence_shadow' does the opposite - plans the shadow model and leaves out the models whose channels it covers. A model with 'Active' unticked in xLights is never planned. exclude_controllers: controller names whose props are left out (empty by default: a prop on 'No Controller' - not wired yet - is planned like any other, so you see what it will get; add \"No Controller\" to leave such props out). exclude_models: model names to treat as not controllable (e.g. alternative props sharing channels). timing_tracks: which seqtool timing tracks the exported .xsq gets - any of sections, bars, beats, lyrics (lyrics only when imported with 'lyrics import'; empty list = none). umbrella_name_patterns: groups whose name matches one of these (regular expressions) are umbrella groups - over the others, planned as part of the yard - even when xLights lists props rather than groups in them (default: names ending in -all); a rule with group_kind= still decides for its groups. shadow_followers: models whose start channel follows a shadow model ('>Shadow:1' or '@Shadow:1'): true = treat as a shadow model too (left out with skip_shadow), false = plan it; 'layout' asks about new ones and remembers the answer here. export_on_replan: after a change (pin, react, palette ...) the plan is made again; true also writes the .xsq each time (0.24.28: by default only 'xlights-export' / 4. Export does, which saves seconds per change). rotation_clockwise (0.24.48): a 'rotation' share of a turn (3oclock, 90deg) is clockwise on the Layer Settings Rotation slider; false if your xLights turns the other way.",
+  "exclude_layout_groups": [
+    "dev",
+    "hide"
+  ],
+  "exclude_controllers": [],
+  "exclude_name_patterns": [
+    "placeholder",
+    "filler"
+  ],
+  "flood_max_nodes": 3,
+  "umbrella_name_patterns": [
+    "(?i)[-_ ]all$"
+  ],
+  "group_layouts": {
+    "per_prop": [
+      "Overlay - Centered",
+      "Overlay - Scaled",
+      "Per Model Default",
+      "Per Model Per Preview",
+      "Per Model Single Line"
+    ],
+    "stacked": [
+      "Horizontal Stack",
+      "Vertical Stack",
+      "Horizontal Stack - Scaled",
+      "Vertical Stack - Scaled"
+    ],
+    "as_one": [
+      "minimalGrid",
+      "grid",
+      "Minimal Grid",
+      "Horizontal",
+      "Vertical",
+      "Default",
+      "Per Preview"
+    ]
+  },
+  "shadow_models": "skip_shadow",
+  "exclude_models": [],
+  "timing_tracks": [
+    "sections",
+    "bars",
+    "beats",
+    "lyrics"
+  ],
+  "shadow_followers": {},
+  "export_on_replan": false,
+  "rotation_clockwise": true
+}

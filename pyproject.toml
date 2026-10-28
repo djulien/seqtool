@@ -1,0 +1,19 @@
+[project]
+name = "seqtool"
+version = "0.24.56"
+description = "Music-to-xLights sequence generator: analysis -> matchup -> XSQ"
+requires-python = ">=3.10"
+license = { text = "Proprietary (all third-party deps must be MIT/BSD/Apache/ISC/PD)" }
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+# Used automatically when installed; a built-in subset validator is the fallback.
+validate = ["jsonschema>=4.18"]   # MIT
+stems = ["demucs"]                # MIT; optional vocal activity (prompted install)
+lyrics = ["faster-whisper"]       # MIT; lyrics transcription (prompted install)
+
+[project.scripts]
+seqtool = "seqtool.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["seqtool*"]

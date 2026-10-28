@@ -1,0 +1,20 @@
+{
+  "_doc": "General settings (0.24.34). session_start: commands run when a seqtool session starts ('xlights-kit --update' only when there is a layout and the training lacks steps) (the seqtool> prompt; 'start' runs them any time - the seqtool-direction skill does). fuzzy: how close a mistyped word, name or number must be to a known one (layout names, the song's sections and sung words, seqtool's own words) to be taken as it - 'accept' and above: used, and said; 'ask' to 'accept': you are asked (or, with no one to ask, it is not used and the most likely one is shown); below 'ask': not a match. 1.0 = the same; one swapped, missing or extra letter in a 6-letter word is about 0.83-0.87. replan_after: in the GUI, cues tapped or dragged are recorded at once and the plan is made this many seconds after the last such change (in a process of its own, so the page and the song keep playing smoothly). show_files: a file a setting names (a picture's file) that is outside the xLights show folder is offered to be copied into 'folder' beside the audio file (or in the show folder when the audio isn't in it), and the copy used from then on; copy=false stops it. directions (0.24.54): how the seqtool-direction skill handles an unclear direction - 'ask' (always ask first) or 'decide' (take the most reasonable reading and say which); empty = not chosen yet (the skill asks once and stores it). check_updates (0.24.56): when seqtool starts, look (at most once a day) for a newer version at the project's GitHub page and offer it ('update' does it any time); SEQTOOL_CHECK_UPDATES=0 turns it off for one shell.",
+  "session_start": [
+    "doctor",
+    "sections",
+    "feel",
+    "xlights-kit --update"
+  ],
+  "fuzzy": {
+    "accept": 0.8,
+    "ask": 0.6
+  },
+  "replan_after": 3,
+  "show_files": {
+    "copy": true,
+    "folder": "seqtool-files"
+  },
+  "directions": "",
+  "check_updates": true
+}
