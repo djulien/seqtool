@@ -730,8 +730,10 @@ class Server:
                 if not self._authorised(q):
                     return
                 if u.path == "/":
+                    from .icons import head_links
                     body = APP.read_text(encoding="utf-8").replace("__TOKEN__", srv.token).replace(
-                        "/*__THUMBS__*/", APP.with_name("thumbs.js").read_text(encoding="utf-8")).encode()
+                        "/*__THUMBS__*/", APP.with_name("thumbs.js").read_text(encoding="utf-8")).replace(
+                        "<!--__ICONS__-->", head_links()).encode()
                     self.send_response(200)
                     self.send_header("Content-Type", "text/html; charset=utf-8")
                     self.send_header("Content-Length", str(len(body)))

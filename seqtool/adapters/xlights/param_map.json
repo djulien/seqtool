@@ -291,8 +291,8 @@
     },
     "scale": {
       "choice": {
-        "fit": "scale_fit",
-        "none": "default"
+        "fit": "default",
+        "none": "scale_none"
       }
     },
     "loop": {

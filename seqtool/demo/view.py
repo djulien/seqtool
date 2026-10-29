@@ -356,7 +356,9 @@ def write_timeline_html(out: Path, stem: str, audio: Path, music: dict, profile:
     except ValueError:
         src = audio.resolve().as_uri()
     path = out / f"{stem}.timeline.html"
-    path.write_text(TEMPLATE.replace("/*__THUMBS__*/", THUMBS_JS).replace("__DATA__", json.dumps(data))
+    from ..gui.icons import head_links
+    path.write_text(TEMPLATE.replace("/*__THUMBS__*/", THUMBS_JS).replace("<!--__ICONS__-->", head_links())
+                    .replace("__DATA__", json.dumps(data))
                     .replace("__AUDIO__", html.escape(Path(src).as_posix()))
                     .replace("__TITLE__", html.escape(stem)), encoding="utf-8")
     return path
@@ -439,6 +441,7 @@ TEMPLATE = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>seqtool timeline - __TITLE__</title>
+<!--__ICONS__-->
 <style>
 :root{--bg:#14161a;--fg:#e6e6e6;--dim:#8a8f98;--grid:#2a2e35;--accent:#ffd34d;--beat:#c3cbd6;--bar:#ff9f1a;--song:#7cc4ff;--wv-voc:#1f8a4c;--wv-mix:#5ff2e2;--wv-ins:#2a4fc0}
 @media (prefers-color-scheme: light){:root{--bg:#fafafa;--fg:#1d1f23;--dim:#666;--grid:#ddd;--accent:#c48a00;--beat:#4e5662;--bar:#c25400;--song:#0b5cad;--wv-voc:#13703c;--wv-mix:#20c8b8;--wv-ins:#1c3a9c}}

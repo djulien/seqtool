@@ -43,7 +43,8 @@ def find_rgbeffects(path: Path) -> Path:
             raise SystemExit(f"no xlights_rgbeffects.xml in {path} - give the show folder, e.g. 'layout ~/xLights/show'")
         return f
     if not path.exists():
-        raise SystemExit(f"no such file or folder: {path} - e.g. 'layout ~/xLights/show' (globs ok)")
+        from ..common.paths import where
+        raise SystemExit(f"no such file or folder: {path}{where(path)} - e.g. 'layout ~/xLights/show' (globs ok)")
     return path
 
 

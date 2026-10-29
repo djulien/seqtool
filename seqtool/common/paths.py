@@ -67,10 +67,30 @@ GLOB_CHARS = "*?["
 KINDS = ("music-profile", "music", "models", "layout", "matchup", "validation", "timeline", "summary")
 
 
+class NoMatch(ValueError):
+    """A typed glob pattern that matches nothing."""
+
+
+def _command_hint(text: str) -> str:
+    """A whole command typed where a file name was asked for (0.24.58)."""
+    w = str(text).split()
+    if len(w) > 1 and (any(x.startswith("--") for x in w) or w[0] in ("run", "layout", "lyrics", "sections")):
+        return " - that looks like a command: a question that asks for a file wants just the file's name"
+    return ""
+
+
+def where(path) -> str:
+    """' (relative to C:\\...)' for a relative path - which folder a typed path was looked for in."""
+    try:
+        return "" if Path(path).expanduser().is_absolute() else f" (looked for in {os.getcwd()}, the working folder)"
+    except (OSError, ValueError):
+        return ""
+
+
 def expand(text: str, want: str = "any") -> Path:
     """A typed path that may contain a glob pattern (*, ?, [..]) and ~.
     One match -> that path. Several -> the user picks one (on a terminal), or an
-    error listing them. None -> the text as given (the command reports it)."""
+    error listing them. None -> NoMatch, naming the working folder (0.24.58)."""
     from glob import glob
     raw = os.path.expanduser(str(text).strip().strip("'\""))
     if not any(ch in raw for ch in GLOB_CHARS):
@@ -82,8 +102,9 @@ def expand(text: str, want: str = "any") -> Path:
         hits = [h for h in hits if os.path.isfile(h)]
     if len(hits) == 1:
         return Path(hits[0])
-    if not hits:
-        return Path(raw)
+    if not hits:                                   # 0.24.58: said here, with where it looked
+        raise NoMatch(f"nothing matches '{text}'" + ("" if os.path.isabs(raw) else f" in {os.getcwd()} (the "
+                      "working folder - 'pwd' shows it, 'cd FOLDER' changes it)") + _command_hint(text))
     from .prompt import ask, interactive
     if not interactive():
         raise ValueError(f"'{text}' matches {len(hits)} paths: " + ", ".join(hits[:8])

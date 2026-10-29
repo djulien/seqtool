@@ -1,6 +1,6 @@
 {
   "_doc": "Steps for the live xLights kit wizard. One working sequence file; after each step the user saves and the wizard checks the file immediately. For a change step the wizard looks at the right-most effect of that type and compares it with both the previous step and the effect's defaults, keeping the smaller difference - so the user may keep editing the same effect or add a fresh copy for each step. Labels are from recent xLights; 'aka' gives alternate names. kit_version is bumped whenever the steps change; min_compatible is the oldest kit_version whose results can still be used as-is (older ones must be re-trained). 'xlights-kit --update' learns only the steps a version's training doesn't have yet (e.g. after a kit_version bump).",
-  "kit_version": 16,
+  "kit_version": 17,
   "effects": [
     {
       "effect": "Color Wash",
@@ -248,7 +248,7 @@
         },
         {
           "param": "type_waveform",
-          "do": "Type: Waveform (if that is its default, setting it back is fine)"
+          "do": "Type: Waveform (from the Volume Bars or Level Bar set before; if Waveform is already showing, choose another type and then Waveform again)"
         },
         {
           "param": "type_volume_bars",
@@ -256,7 +256,7 @@
         },
         {
           "param": "type_spectrogram",
-          "do": "Type: Spectrogram (if that is its default, setting it back is fine)"
+          "do": "Type: Spectrogram (from the type set before; if Spectrogram is already showing, choose another type and then Spectrogram again)"
         }
       ]
     },
@@ -268,10 +268,11 @@
     {
       "effect": "Faces",
       "generic": "face",
+      "on": "a model that HAS a singing face - the next step chooses one of its faces",
       "variants": [
         {
           "param": "face_definition",
-          "do": "Face Definition: choose one of the model's faces (put this Faces effect on a model that HAS a singing face; any face other than the one shown)"
+          "do": "Face Definition: choose one of the model's faces (any face other than the one shown)"
         },
         {
           "param": "timing_track",
@@ -288,8 +289,8 @@
           "do": "Filename (the file picker): choose any picture file - an animated GIF is best"
         },
         {
-          "param": "scale_fit",
-          "do": "Scaling: Scale To Fit"
+          "param": "scale_none",
+          "do": "Scaling: No Scaling (choosing the file switched it to Scale To Fit)"
         },
         {
           "param": "loop_gif",
@@ -313,7 +314,7 @@
     },
     {
       "kind": "layers",
-      "do": "On the same model, add a second effect layer and put any effect on it, overlapping an effect on layer 1."
+      "do": "On the same model, add a second effect layer (right-click the model's row > Insert Layer Above or Below - either is fine) and put any effect on the new layer, overlapping an effect on the other layer."
     },
     {
       "kind": "group",

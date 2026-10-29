@@ -380,6 +380,10 @@ def complete(line: str) -> dict:
         prev = toks[1:-1]
         opt_actions = {o: a for a in (ap._actions if ap else []) for o in a.option_strings}
         last = prev[-1] if prev else None
+        eq = ""
+        if word.startswith("--") and "=" in word and word.split("=", 1)[0] in opt_actions:   # 0.24.58: --audio=FILE
+            last, (eq, word) = word.split("=", 1)[0], (word.split("=", 1)[0] + "=", word.split("=", 1)[1])
+            start += len(eq)
         if last in opt_actions and opt_actions[last].nargs != 0 and not (opt_actions[last].nargs == "?" and word.startswith("-")):
             items = _value_items(cmd, opt_actions[last], word)
         elif word.startswith("-") and ap:
@@ -407,9 +411,13 @@ def complete(line: str) -> dict:
                     items += _kind_items(k[1:], word, free[1:] if cmd == "face" else free)
                 else:
                     items.append({"text": k, "hint": ""})
-            if not items and (word.startswith(("/", "~", ".")) or "/" in word):
+            if not items and (word.startswith(("/", "~", ".")) or "/" in word or "\\" in word):
                 items = _files(word)
     low = word.lower()
+    if any(c in word for c in "*?["):                 # 0.24.58: a pattern typed - what it matches
+        import fnmatch
+        items = [x for x in items if fnmatch.fnmatch(x["text"].lower(), low + "*")]
+        low = ""
     if word.startswith("@"):
         low = word.lower()
     items = [x for x in items if x["text"].lower().startswith(low)] or \

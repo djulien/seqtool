@@ -155,12 +155,14 @@ def features(P: np.ndarray) -> dict:
 
     # --- density: occupied cells in the 2-D bounding box at ~2x node spacing
     nn = _nn_dist(Q)
-    cell = max(2 * float(np.median(nn)), 1e-9)
     span = xy.max(axis=0) - xy.min(axis=0)
-    gx, gy = (np.maximum(1, np.ceil(span / cell))).astype(int)
-    ij = np.floor((xy - xy.min(axis=0)) / cell).astype(int)
+    pos = nn[nn > 0]                                   # 0.24.58: nodes on top of each other don't make the
+    cell = 2 * float(np.median(pos)) if len(pos) else 0.0   # grid microscopic (an int overflow on Windows)
+    cell = max(cell, float(span.max()) / 2000.0, 1e-9)
+    gx, gy = (int(min(4000, max(1, math.ceil(float(v) / cell)))) for v in span)
+    ij = np.floor((xy - xy.min(axis=0)) / cell).astype(np.int64)
     ij = np.minimum(ij, [gx - 1, gy - 1])
-    f["density"] = _clip(len({(a, b) for a, b in ij}) / (gx * gy))
+    f["density"] = _clip(len({(int(a), int(b)) for a, b in ij}) / float(gx * gy))
 
     # --- symmetry (mirror / rotation about centre) at tolerance ~1.5 spacing
     tol = cell + 1e-9

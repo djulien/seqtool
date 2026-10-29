@@ -70,7 +70,8 @@ def build_steps(known: dict | None = None) -> list[dict]:
         todo = [v for v in e["variants"] if v["param"] not in learned]
         if known is not None and e["generic"] in have_fx and not todo:
             continue
-        steps.append({"kind": "add", "effect": e["effect"], "generic": e["generic"]})
+        steps.append({"kind": "add", "effect": e["effect"], "generic": e["generic"],
+                      **({"on": e["on"]} if e.get("on") else {})})
         for v in (todo if known is not None else e["variants"]):
             steps.append({"kind": "change", "effect": e["effect"], "generic": e["generic"],
                           "param": v["param"], "do": v["do"]})
@@ -103,6 +104,40 @@ def missing_steps(version: str) -> tuple[dict | None, list[dict]]:
     return obs, build_steps(obs)[1:]
 
 
+STRUCTURE_LABELS = {"create": "New sequence", "palette": "Palette", "layers": "Layers", "group": "Groups",
+                    "group_render": "Layer Settings", "rotation": "Layer Settings", "value_curve": "Value curves",
+                    "value_curve_down": "Value curves", "value_curve_custom": "Value curves",
+                    "timing": "Timing tracks", "submodel": "Submodels"}
+
+
+def step_label(step: dict | None) -> str:
+    """0.24.58: what a step is about - the effect's name, or the part of xLights it trains."""
+    if not step:
+        return ""
+    return step.get("effect") or STRUCTURE_LABELS.get(step["kind"], step["kind"].replace("_", " ").capitalize())
+
+
+def step_header(step: dict | None, i: int, n: int) -> str:
+    """'Twinkle [35/79]'."""
+    lab = step_label(step)
+    return f"{lab} [{i}/{n}]" if lab else f"[{i}/{n}]"
+
+
+def _text_param(generic: str | None, param: str | None) -> bool:
+    """A step whose setting is a file path (param_map 'text' + 'path'): 0.24.58."""
+    try:
+        pm = json.loads((Path(__file__).with_name("param_map.json")).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return any(isinstance(sp, dict) and sp.get("text") == param and sp.get("path")
+               for sp in (pm.get(generic or "") or {}).values())
+
+
+def _pathy(v) -> bool:
+    new = v[1] if isinstance(v, (list, tuple)) else v
+    return isinstance(new, str) and bool(re.search(r"[\\/]|\.[A-Za-z0-9]{2,5}$", new.strip()))
+
+
 def step_text(step: dict, work: Path, model: str | None) -> str:
     k = step["kind"]
     if k == "create":
@@ -112,6 +147,8 @@ def step_text(step: dict, work: Path, model: str | None) -> str:
         if step.get("generic") == "dark":           # Off has nothing to set
             return f"Add an {step['effect']} effect to one model{f' (e.g. {model})' if model else ''}. Save."
         where = f"(e.g. {model})" if model else "(any pixel model; a matrix or tree lets you see each change)"
+        if step.get("on"):                           # 0.24.58: the next steps need a certain kind of model
+            where = f"({step['on']})"
         return f"Add {step['effect']} with its default settings to one model {where}. Save."
     if k == "change":
         return f"{step['effect']}: {step['do']}. Save."
@@ -287,14 +324,20 @@ class Session:
                 return "wait", f"no {st['effect']} effect in the file"
             d_prev = _diff(self.s["last"].get(st["effect"], {}), e.settings)
             d_def = _diff(self.s["defaults"].get(st["effect"], {}), e.settings)
-            if not d_prev:
-                return "wait", ("no change since the previous step" if d_def
-                                else f"the right-most {st['effect']} still has default settings")
+            if not d_prev:                    # 0.24.58: which effect was looked at
+                at = f"the right-most {st['effect']} (on {e.element}, at {e.start:.2f}s)"
+                return "wait", (f"no change since the previous step in {at} - change it on that effect (or add a "
+                                "copy further right), then save" if d_def else f"{at} still has default settings")
             if not d_def:                     # a choice set back to its default value is a valid change
                 d = d_prev
             else:                             # prefer the comparison with the fewest primary changes, then fewest overall
                 d = min((d_prev, d_def), key=lambda dd: (len(split_change(dd)[0]), len(dd)))
             primary, companions = split_change(d)
+            if len(primary) > 1 and _text_param(st.get("generic"), st.get("param")):
+                paths = [k_ for k_, v_ in primary.items() if _pathy(v_)]
+                if len(paths) == 1:           # 0.24.58: choosing a file also switched a related option (Scaling)
+                    companions = {**companions, **{k_: v_ for k_, v_ in primary.items() if k_ != paths[0]}}
+                    primary = {paths[0]: primary[paths[0]]}
             short = lambda kv: ", ".join(f"{k.split('_', 2)[-1]} {v[0]}->{v[1]}" for k, v in kv.items())  # noqa: E731
             obs = {"kind": "change", "effect": st["effect"], "generic": st["generic"], "param": st["param"],
                    "do": st["do"], "primary": primary, "companions": companions, "settings": e.settings}
@@ -388,10 +431,11 @@ class Session:
             if not good_:
                 found = ", ".join(f"'{t}' ({n} marks)" for t, n in x.timing_tracks.items()) or "none"
                 return "wait", f"no new timing track with 3+ marks yet; timing tracks in the file: {found}"
-            t, n = sorted(good_.items())[0]
+            t, n = max(good_.items(), key=lambda kv: (kv[1], kv[0]))     # 0.24.58: the fullest new track
             self._record({"kind": "timing", "track": t, "marks": n})
             self.advance(x)
-            return "ok", f"timing track '{t}' with {n} marks"
+            others = [f"'{o}'" for o in sorted(good_) if o != t]
+            return "ok", f"timing track '{t}' with {n} marks" + (f" (also new: {', '.join(others)})" if others else "")
         if k == "submodel":
             seen = set(self.s["seen"])
             subs = [e for e in x.effects if e.element_type == "submodel"]
@@ -560,7 +604,22 @@ def _read_key_line(timeout: float) -> str | None:
 
 def _mark(ok: bool) -> str:
     enc = (getattr(sys.stdout, "encoding", "") or "").lower()
+    if os.name == "nt" and not os.environ.get("WT_SESSION"):     # 0.24.58: the old console's fonts lack the tick
+        return "\u221a" if ok else "x"
     return ("\u2713" if ok else "\u2717") if "utf" in enc else ("OK" if ok else "X")
+
+
+def _choices(ses, gui: bool = False) -> str:
+    """0.24.58: the keys a step takes, said each time (a/n only while there is something to accept)."""
+    c = ["Enter = check" if gui else "save in xLights (or Enter = check)", "s skip"]
+    if ses.index > 0:
+        c.append("b back")
+    if ses.pending:
+        c.append("a accept")
+        if len(getattr(ses, "choices", None) or []) > 1:
+            c.append("n next choice")
+    c.append("q quit")
+    return "(" + " \u00b7 ".join(c) + ")" if os.name != "nt" or os.environ.get("WT_SESSION") else "(" + ", ".join(c) + ")"
 
 
 def live(kit_dir: Path, work: Path, fresh: bool = False, known: dict | None = None, gui: bool = False) -> bool:
@@ -588,6 +647,7 @@ def live(kit_dir: Path, work: Path, fresh: bool = False, known: dict | None = No
              f"{len(ses.steps) - 1} new step(s); everything learned before is kept")
     n = len(ses.steps)
     print(f"\nTraining file: {show(work)}   ({n} steps; Enter = check now, s = skip, b = back, q = quit)")
+    info(f"  relative paths are taken from the working folder: {os.getcwd()}")
     if gui:
         info("  in the GUI: after each save in xLights, press Enter here (seqtool then checks the file)")
     # fresh start: wait for a new save even if an old training file is there
@@ -595,12 +655,14 @@ def live(kit_dir: Path, work: Path, fresh: bool = False, known: dict | None = No
     shown = -1
     while not ses.done():
         if shown != ses.index:
-            print(f"\n{{head}}[{ses.index + 1}/{n}]{{/}} {{do}}{step_text(ses.step, work, ses.s['model'])}{{/}}")
+            print(f"\n{{head}}{step_header(ses.step, ses.index + 1, n)}{{/}} {{do}}{step_text(ses.step, work, ses.s['model'])}{{/}}")
+            if not gui:                          # 0.24.58: the choices, on every step
+                print(f"      {{note}}{_choices(ses)}{{/}}")
             shown = ses.index
         if gui:
             from ...common.prompt import Cancelled
             try:
-                key = ask(f"[{ses.index + 1}/{n}] saved? Enter = check  (s = skip, b = back, a = accept, n = next choice, q = quit)",
+                key = ask(f"{step_header(ses.step, ses.index + 1, n)} saved? {_choices(ses, gui=True)}",
                           "", show_default=False).strip()
             except Cancelled:
                 key = "q"
@@ -651,6 +713,8 @@ def live(kit_dir: Path, work: Path, fresh: bool = False, known: dict | None = No
                 good(f"  {_mark(True)} {msg}")
             else:
                 warn(f"  {_mark(False)} {msg}")
+                if status == "multi" and not gui:
+                    print(f"      {{note}}{_choices(ses)}{{/}}")
             state_file.write_text(json.dumps(ses.s, indent=1))
     finish(ses, kit_dir, work, state_file)
     return True
@@ -679,8 +743,11 @@ def finish(ses: Session, kit_dir: Path, work: Path, state_file: Path) -> Path:
     (out / "observations.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
     if work.exists():
         shutil.copy2(work, out / "reference.xsq")          # skeleton for the exporter
-    good(f"kit complete for xLights {ver}: {show(out / 'observations.json')}"
-         + (f"  ({len(res['skipped_steps'])} step(s) skipped)" if res["skipped_steps"] else ""))
+    good(f"kit complete for xLights {ver}: {show(out / 'observations.json')}")
+    if ses.s.get("skipped"):                                     # 0.24.58: which, and how to come back to them
+        names = list(dict.fromkeys(step_header(ses.steps[i], i + 1, len(ses.steps)) for i in ses.s["skipped"]
+                                   if i < len(ses.steps)))
+        warn(f"  {len(names)} step(s) skipped: {', '.join(names)} - 'xlights-kit --update' learns them later")
     if state_file.exists():
         state_file.unlink()
     fseqs = fseq_files(work)
@@ -752,7 +819,8 @@ def run(kit_dir: Path | None = None, interactive_mode: bool | None = None, fresh
                                  "('inspect xlights' lists what was learned)")
             todo = build_steps(obs)[1:]
             info(f"  learning again: {', '.join(gone)}")
-        info(f"already learned for xLights {', '.join(vers)} ({msg})")
+        info(f"already learned for xLights {', '.join(vers)} ({msg})"
+             + (f"; {len(todo)} step(s) still to learn: {todo_names(todo)}" if todo and not fresh else ""))
         if fresh:
             info("  --fresh: every step again; the result replaces what was learned for this version")
         if todo and update is not False and not fresh:
@@ -776,6 +844,15 @@ def run(kit_dir: Path | None = None, interactive_mode: bool | None = None, fresh
     return live(kit_dir, kit_dir / WORK_NAME, fresh, known, gui=gui)
 
 
+def todo_names(todo: list[dict]) -> str:
+    """'Pictures (3 settings), Timing tracks' - the steps a training lacks, by what they are about."""
+    out: dict[str, int] = {}
+    for st in todo:
+        lab = step_label(st)
+        out[lab] = out.get(lab, 0) + (st["kind"] == "change")
+    return ", ".join(f"{k} ({v} setting{'s' * (v != 1)})" if v else k for k, v in out.items())
+
+
 def at_start(argv: list[str]) -> tuple[str, str]:
     """For 'start' (0.24.47): ('skip', why) when there is nothing to do - no layout yet, or the
     training is complete - else ('ask', what is lacking): run it where someone can answer."""
@@ -793,9 +870,8 @@ def at_start(argv: list[str]) -> tuple[str, str]:
     todo = missing_steps(enc.version)[1] if enc else []
     if not todo:
         return "skip", "the training is complete"
-    return "ask", (f"the xLights training for {enc.version} lacks {len(todo)} step(s) ("
-                   + ", ".join(dict.fromkeys(st.get("effect") or st["kind"] for st in todo if st["kind"] != "change"))
-                   + ") - run xlights-kit --update (in the GUI's console or at the seqtool> prompt)")
+    return "ask", (f"the xLights training for {enc.version} lacks {len(todo)} step(s) ({todo_names(todo)}) - "
+                   "run xlights-kit --update (in the GUI's console or at the seqtool> prompt)")
 
 
 def offer(context: str = "export") -> bool:

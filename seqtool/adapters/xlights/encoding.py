@@ -264,9 +264,14 @@ class Encoding:
                         self.notes.append(n_)
                     continue
                 s[key] = str(v)
+                claimed = claimed_keys(e["params"], spec["text"])
                 for ck, cv in (learned.get("companions") or {}).items():   # xLights drops a related one (0.24.20)
-                    if ck != key and isinstance(cv, (list, tuple)) and cv[1] is None:
+                    if ck == key or ck in claimed or not isinstance(cv, (list, tuple)):
+                        continue
+                    if cv[1] is None:
                         s.pop(ck, None)
+                    elif spec.get("path"):        # 0.24.58: and switches one on (a picture's Scaling: Scale To Fit)
+                        s[ck] = cv[1]
             elif "choice" in spec:
                 kstep = spec["choice"].get(str(v), "default")
                 learned = e["params"].get(kstep)

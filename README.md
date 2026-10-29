@@ -1,13 +1,28 @@
-# seqtool — music → light-sequence toolchain (prototype, v0.24.57)
+# seqtool — music → light-sequence toolchain (prototype, v0.24.58)
 
 The design is in [DESIGN.md](DESIGN.md) (findings on the developer's own songs and show: DESIGN-addendum.md); [HANDOFF.md](HANDOFF.md) is the short version for picking up development (state, conventions, open items). The core is generic; xLights lives in `seqtool/adapters/xlights/`.
 
 ## Quick start
 
-You need Python 3.10+ and numpy. ffmpeg is optional and is only needed for MP3 and other non-WAV files.
+You need Python 3.10 or newer (python.org). seqtool offers to install numpy, the one package it
+can't start without; ffmpeg is optional and is only needed for MP3 and other non-WAV files.
+
+**Quickest: the single-file download.** Download `seqtool-0.24.58.pyz` (from the project's page,
+https://github.com/djulien/seqtool) into a folder of your own and run it:
 
 ```bash
-unzip seqtool-0.24.57.zip && cd seqtool
+python seqtool-0.24.58.pyz         # Windows: py seqtool-0.24.58.pyz - or double-click it
+```
+
+The first time, it unpacks itself into a `seqtool` folder beside it and starts the `seqtool>`
+prompt (type `help`, `doctor`, `tutorial` or `demo`). Later runs start straight away; a newer .pyz
+upgrades that folder, keeping files you changed. (Windows: for colours, start it from Windows
+Terminal.)
+
+**Or the .zip** (the same files, unpacked yourself):
+
+```bash
+unzip seqtool-0.24.58.zip && cd seqtool
 ./seqtool.py            # interactive prompt: type 'help', 'demo', 'inspect audio', 'quit' ...; Tab completes (twice: choices); 'history', '!!', '!N' 
 ./seqtool.py -demo      # or run one command and exit: the demo
 ./seqtool.py --gui      # prompt + live browser GUI (menu, timeline with pin/reroll on each effect and each row, a console that runs commands)

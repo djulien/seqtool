@@ -10,4 +10,4 @@ from pathlib import Path as _Path
 try:
     __version__ = (_Path(__file__).resolve().parents[1] / "VERSION").read_text().strip()
 except OSError:          # installed without the VERSION file
-    __version__ = "0.24.57"
+    __version__ = "0.24.58"

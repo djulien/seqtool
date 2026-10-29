@@ -167,6 +167,28 @@ def _layout_line() -> bool:
     return False
 
 
+def _kit_line() -> None:
+    """One line about the xLights kit training: none, complete, or which steps it lacks (skipped ones too)."""
+    try:
+        from ..adapters.xlights import kit
+        from ..adapters.xlights.encoding import find
+        vers = kit.learned_versions()
+        if not vers:
+            print("xLights kit:  {warn}not run yet{/} - 'xlights-kit' learns how your xLights stores effects")
+            return
+        enc = find()
+        obs, todo = kit.missing_steps(enc.version) if enc else (None, [])
+        skipped = len((obs or {}).get("skipped_steps") or [])
+        if not todo:
+            print(f"xLights kit:  {{ok}}complete{{/}} for xLights {enc.version if enc else ', '.join(vers)}")
+            return
+        print(f"xLights kit:  {{warn}}incomplete{{/}} for xLights {enc.version}: {len(todo)} step(s) to learn"
+              + (f" ({skipped} skipped)" if skipped else "") + f" - {kit.todo_names(todo)}")
+        print("fix: 'xlights-kit --update' learns only those")
+    except Exception as e:  # noqa: BLE001 - status never fails over this
+        print(f"xLights kit:  can't be read ({e.__class__.__name__})")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="seqtool status", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -181,6 +203,7 @@ def main(argv=None) -> int:
     if cur:
         print(f"current song: {show(cur['audio'])}" + ("" if cur["audio"].exists() else "  (file not found)"))
     lay_bad = _layout_line()                         # the stored show layout too (0.19.11)
+    _kit_line()                                      # 0.24.58: and the xLights training
     if not a.folders:
         if not cur:
             print("no song yet - run {do}seqtool run --audio SONG{/}")

@@ -1,6 +1,6 @@
 ---
 name: "seqtool-direction"
-description: "(seqtool 0.24.57) Help with seqtool, which turns a song and an xLights layout into an xLights sequence (.xsq): getting started and how to use it, and turning creative direction (\"bigger chorus\", \"calmer intro\", \"flash on 'star'\") into seqtool commands, running them, checking the result and exporting. Use whenever the user mentions seqtool, or sequencing a song for an xLights light show."
+description: "(seqtool 0.24.58) Help with seqtool, which turns a song and an xLights layout into an xLights sequence (.xsq): getting started and how to use it, and turning creative direction (\"bigger chorus\", \"calmer intro\", \"flash on 'star'\") into seqtool commands, running them, checking the result and exporting. Use whenever the user mentions seqtool, or sequencing a song for an xLights light show."
 ---
 
 # Directing a seqtool sequence
@@ -31,7 +31,7 @@ changes it the same way. Then follow it: **ask** - ask before running anything y
 guess at; **decide** - take the most reasonable reading, say which, and do it (still ask when a
 wrong guess would be expensive to undo: writing into the user's xLights files, deleting).
 
-Written for **seqtool 0.24.57** (this copy comes in that version's download, beside seqtool.py;
+Written for **seqtool 0.24.58** (this copy comes in that version's download, beside seqtool.py;
 it works with later versions too).
 
 ## Running it
@@ -40,7 +40,7 @@ it works with later versions too).
   working folder (`pwd` says which; `cd FOLDER` changes it).
 - **Check the version first:** `seqtool --version`. If seqtool says a newer version is available,
   tell the user (on their computer, seqtool's `update` command gets it); don't fetch one here unless
-  they ask. Older than 0.24.57: no `adjust`; older than 0.24.56: no `update`; older than 0.24.55: lyrics times written
+  they ask. Older than 0.24.58: `status` says nothing about the xLights kit; older than 0.24.57: no `adjust`; older than 0.24.56: no `update`; older than 0.24.55: lyrics times written
   `0:12.50 words` (no brackets) aren't read - use `[0:12.50] words`; older than 0.24.54: no `general.directions`
   (ask the user's preference anyway, and keep it in mind for the session); older than 0.24.53: no `"react"` steps; older than 0.24.50: no `score`; older than 0.24.49: no `calls`, cue tags,
   `submodel angles`, `"only"`, `spread: pitch`; older than 0.24.48: no glides (`a..b`),

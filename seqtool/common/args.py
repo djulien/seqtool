@@ -36,7 +36,17 @@ class Literal(str):
 def split_line(line: str) -> list[str]:
     """shlex.split for a seqtool line (the prompt, the GUI console, batch, start commands),
     marking quoted words that start with '-' as Literal."""
+    import os
+    import re
     import shlex
+    if os.name == "nt" or re.search(r"(?:^|[\s\"'=])[A-Za-z]:\\", line):
+        # 0.24.58: a Windows path ('c:\\show\\bwb26\\') - its backslashes are path separators, not escapes
+        out_, q = [], False                      # (inside '...' a backslash is already plain)
+        for ch in line:
+            if ch == "'" :
+                q = not q
+            out_.append("\\\\" if ch == "\\" and not q else ch)
+        line = "".join(out_)
     lex = shlex.shlex(line, posix=True)
     lex.whitespace_split = True
     lex.commenters = ""
@@ -64,6 +74,18 @@ def _patch_argparse() -> None:
         return orig(self, arg_string)
     argparse.ArgumentParser._parse_optional = _parse_optional
     argparse.ArgumentParser._seqtool_literal = True
+    import inspect
+    try:                                      # 0.24.58: Python 3.14's own help colours - raw codes on some
+        has_color = "color" in inspect.signature(argparse.ArgumentParser.__init__).parameters   # Windows consoles
+    except (TypeError, ValueError):
+        has_color = False
+    if has_color:
+        orig_init = argparse.ArgumentParser.__init__
+
+        def __init__(self, *a, **k):
+            k.setdefault("color", False)
+            orig_init(self, *a, **k)
+        argparse.ArgumentParser.__init__ = __init__
     orig_parse = argparse.ArgumentParser.parse_args
 
     def parse_args(self, args=None, namespace=None):

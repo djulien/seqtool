@@ -317,11 +317,17 @@ def _friendly(call):
     except NotJSON as e:
         raise SystemExit(f"{e} - give the song or its .json result (e.g. 'classify-music SONG.mp3')") from None
     except FileNotFoundError as e:
-        raise SystemExit(f"not found: {e.filename} - check the name ('pwd' shows where you are)") from None
+        from .common.paths import where
+        raise SystemExit(f"not found: {e.filename}{where(e.filename or '')} - check the name "
+                         "('pwd' shows the working folder, 'cd FOLDER' changes it)") from None
     except Exception as e:                                       # 0.24.55: a missing package - its own fix line
         from .common.deps import MissingDependency
-        if isinstance(e, MissingDependency):
+        from .common.paths import NoMatch
+        if isinstance(e, (MissingDependency, NoMatch)):
             raise SystemExit(str(e)) from None
+        if isinstance(e, OSError) and getattr(e, "winerror", None) == 123:     # 0.24.58: '*' etc. in a name
+            raise SystemExit(f"'{e.filename}' isn't a file name Windows allows (a * or ? that matched nothing?) - "
+                             "'pwd' shows the working folder") from None
         raise
 
 
@@ -516,8 +522,10 @@ def repl(cmds: dict) -> int:
                     from seqtool.common.complete import complete as engine, complete_answer
                     from seqtool.common.prompt import answer_kind
                     res = complete_answer(buf, answer_kind()) if answer_kind() else engine(buf)
-                    complete.opts = [x["text"] + (" " if x.get("space", True) else "") for x in res["items"]
-                                     if x["text"].startswith(text) or not text]
+                    pre = buf[len(buf) - len(text):res["start"]] if res["start"] > len(buf) - len(text) else ""
+                    complete.opts = [pre + x["text"] + (" " if x.get("space", True) else "") for x in res["items"]
+                                     if (pre + x["text"]).startswith(text) or not text or pre
+                                     or any(c in text for c in "*?[\"")]     # 0.24.58: --audio=, patterns
                     hints.clear()
                     hints.update({x["text"]: x.get("hint", "") for x in res["items"]})
                 except Exception:  # noqa: BLE001 - never break the prompt
@@ -541,6 +549,9 @@ def repl(cmds: dict) -> int:
         readline.parse_and_bind("tab: complete")
     except ImportError:
         readline = None
+        if os.name == "nt":                     # 0.24.58: Windows' Python has no line editor of its own
+            print("(Tab completion at this prompt needs pyreadline3 on Windows: 'py -m pip install pyreadline3', "
+                  "then start seqtool again - the GUI's console completes without it)")
     print(f"seqtool {__version__} - type 'help' for commands, 'quit' to leave")
     try:                                              # 0.24.34: general.session_start (doctor, sections, feel)
         from seqtool.common import start_cmd
