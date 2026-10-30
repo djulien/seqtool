@@ -185,7 +185,8 @@ def _via_pyz(new: dict, root: Path) -> int:
         return rc
     good(f"seqtool {new['version']} is in {root} (from {pyz.name})")
     return _restart(root / "seqtool.py",
-                    f"to use it: quit seqtool and start it again (python {pyz.name}, or as you always do)")
+                    f"to use it: quit seqtool and start it again (python {pyz.name}, or seqtool.pyz, which starts the "
+                    "newest one beside it, or as you always do)")
 
 
 def _via_zip(new: dict, root: Path) -> int:
@@ -210,7 +211,8 @@ def _via_zip(new: dict, root: Path) -> int:
         good(f"seqtool {new['version']} is in {dest}")
     return _restart(dest / "seqtool.py",
                     f"to use it: quit seqtool and start it from the new folder - cd {dest} and python seqtool.py "
-                    f"(your preferences and songs carry over; the old folder {root.name} can go once you're happy)")
+                    f"(or seqtool.pyz beside it, which starts the newest one; your preferences and songs carry over; "
+                    f"the old folder {root.name} can go once you're happy)")
 
 
 def _restart(script: Path, how: str) -> int:

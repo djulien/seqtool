@@ -1,7 +1,9 @@
 # seqtool-command: pwd | cmd_pwd | tools | where relative paths start, and the folders seqtool uses
 # seqtool-command: cd | cmd_cd | tools | change the working folder: cd FOLDER (glob ok)
+# seqtool-command: dir | cmd_dir | tools | list files to find one: dir [FOLDER|PATTERN] [--kind audio] [-r]
+# seqtool-command: ls | cmd_dir | tools | the same as dir
 # seqtool-command: memory | cmd_memory | tools | system memory and seqtool's own use (change since last 'memory')
-"""Small shell commands: pwd, cd, memory."""
+"""Small shell commands: pwd, cd, dir (ls), memory."""
 from __future__ import annotations
 
 import os
@@ -138,6 +140,103 @@ def cmd_cd(argv=None) -> int:
     except OSError as e:
         raise SystemExit(f"cd: {e.strerror}: {p}")
     print(f"{Path.cwd()}{os.sep}")
+    return 0
+
+
+KINDS = {"audio": (".mp3", ".wav", ".flac", ".ogg", ".m4a", ".aac"), "xsq": (".xsq",),
+         "layout": ("xlights_rgbeffects.xml", "xlights_networks.xml"), "image": (".gif", ".png", ".jpg", ".jpeg", ".bmp", ".webp"),
+         "bundle": (".zip",), "lyrics": (".txt", ".lrc"), "json": (".json",), "seqtool": (".pyz",)}
+
+
+def _kind_of(name: str) -> str | None:
+    low = name.lower()
+    for k, ends in KINDS.items():
+        if any(low.endswith(e) for e in ends):
+            return k
+    return None
+
+
+def _size(n: int) -> str:
+    for unit in ("B", "KB", "MB", "GB"):
+        if n < 1024 or unit == "GB":
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024
+    return str(n)
+
+
+def cmd_dir(argv=None) -> int:
+    """0.24.59: the files in a folder (or matching a pattern), folders first, with size and date -
+    to find the name a command wants. --kind keeps one kind; -r looks in the folders below too."""
+    import argparse
+    import fnmatch
+    import time
+    from .paths import GLOB_CHARS
+    ap = argparse.ArgumentParser(prog="seqtool dir", description="list files: dir [FOLDER|PATTERN] [--kind KIND] [-r]")
+    ap.add_argument("where", nargs="*", help="a folder, or a pattern such as *.mp3 or songs/bat* (default: the working folder)")
+    ap.add_argument("--kind", choices=sorted(KINDS), help="only this kind of file")
+    ap.add_argument("-r", "--recursive", action="store_true", help="the folders below too (up to 300 files)")
+    ap.add_argument("-a", "--all", action="store_true", help="hidden files and seqtool's own result files too")
+    a = ap.parse_args(argv or [])
+    raw = os.path.expanduser(" ".join(a.where).strip().strip("'\"")) or "."
+    pat = None
+    if any(c in raw for c in GLOB_CHARS):
+        folder, pat = os.path.split(raw)
+        folder = folder or "."
+    else:
+        folder = raw
+    base = Path(folder)
+    if not base.is_dir():
+        if base.is_file():
+            base, pat = base.parent, base.name
+        else:
+            from .paths import where as _where
+            raise SystemExit(f"no such folder: {folder}{_where(folder)} - e.g. 'dir', 'dir ~/Music', 'dir *.mp3'")
+    shown = base.resolve()
+    print(f"{{head}}{shown}{os.sep}{{/}}" + (f"  {pat}" if pat else "") + (f"  ({a.kind})" if a.kind else ""))
+    walk = base.rglob("*") if a.recursive else base.iterdir()
+    dirs, files, n = [], [], 0
+    try:
+        for p_ in walk:
+            name = p_.name
+            if not a.all and (name.startswith(".") or "-seqtool." in name or name.endswith(".xbkp")):
+                continue
+            if pat and not fnmatch.fnmatch(name.lower(), pat.lower()):
+                continue
+            try:
+                isd = p_.is_dir()
+            except OSError:
+                continue
+            if isd:
+                if not a.recursive and not a.kind:
+                    dirs.append(p_)
+                continue
+            if a.kind and _kind_of(name) != a.kind:
+                continue
+            files.append(p_)
+            n += 1
+            if n >= 300:
+                break
+    except PermissionError as e:
+        raise SystemExit(f"dir: no permission to read {e.filename}")
+    key = lambda q: str(q).lower()   # noqa: E731
+    for d in sorted(dirs, key=key):
+        print(f"  {{note}}{d.name}{os.sep}{{/}}")
+    for f in sorted(files, key=key):
+        st = f.stat()
+        rel = f.relative_to(base) if a.recursive else f.name
+        print(f"  {str(rel):<44} {_size(st.st_size):>9}  {time.strftime('%Y-%m-%d %H:%M', time.localtime(st.st_mtime))}")
+    if not dirs and not files:
+        print("  (nothing" + (" that matches" if pat or a.kind else "") + " here" + ("" if a.recursive else
+              " - 'dir -r' looks in the folders below too") + ")")
+    elif n >= 300:
+        print("  ... (more - narrow it with a pattern or --kind)")
+    audio = [f for f in files if _kind_of(f.name) == "audio"]
+    if audio:
+        one = audio[0].relative_to(base) if a.recursive else Path(audio[0].name)
+        if base.resolve() != Path.cwd().resolve():
+            one = base / one
+        q = f'"{one}"' if " " in str(one) else str(one)
+        print(f"e.g. {{do}}run --audio {q}{{/}}   (names are relative to the working folder: {Path.cwd()})")
     return 0
 
 

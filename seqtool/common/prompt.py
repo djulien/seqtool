@@ -18,10 +18,13 @@ import sys
 from pathlib import Path
 import threading
 
-try:
-    import readline  # noqa: F401  (enables editing/history for input())
-except ImportError:      # Windows without pyreadline
-    pass
+if os.name != "nt" or os.environ.get("SEQTOOL_READLINE") == "1":
+    try:
+        import readline  # noqa: F401  (enables editing/history for input())
+    except Exception:    # noqa: BLE001 - no readline, or a broken one: plain input()
+        pass
+# Windows (0.24.59): seqtool's own line editor (common/lineedit.py) - pyreadline3 is not loaded, it can
+# stop seqtool at start on newer Pythons
 
 _local = threading.local()
 
@@ -111,7 +114,13 @@ def _ask(question: str, default: str = "", remember_as: str | None = None, show_
         sys.stdout = term                      # input() writes its prompt to sys.stdout
         try:
             import re as _re                  # readline must not count colour codes as prompt width
-            ans = input(_re.sub(r"(\x1b\[[0-9;]*m)", "\x01\\1\x02", rendered) + " " if inline else "> ").strip()
+            from . import lineedit
+            if lineedit.available():          # 0.24.59: Windows - Tab completes here too
+                from .complete import complete_answer
+                ans = lineedit.read_line(rendered + " " if inline else "> ",
+                                         complete=lambda t: complete_answer(t, answer_kind() or "")).strip()
+            else:
+                ans = input(_re.sub(r"(\x1b\[[0-9;]*m)", "\x01\\1\x02", rendered) + " " if inline else "> ").strip()
         except EOFError:
             ans = ""
         finally:

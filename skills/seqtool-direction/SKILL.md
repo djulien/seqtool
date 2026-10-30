@@ -1,6 +1,6 @@
 ---
 name: "seqtool-direction"
-description: "(seqtool 0.24.58) Help with seqtool, which turns a song and an xLights layout into an xLights sequence (.xsq): getting started and how to use it, and turning creative direction (\"bigger chorus\", \"calmer intro\", \"flash on 'star'\") into seqtool commands, running them, checking the result and exporting. Use whenever the user mentions seqtool, or sequencing a song for an xLights light show."
+description: "(seqtool 0.24.59) Help with seqtool, which turns a song and an xLights layout into an xLights sequence (.xsq): getting started and how to use it, and turning creative direction (\"bigger chorus\", \"calmer intro\", \"flash on 'star'\") into seqtool commands, running them, checking the result and exporting. Use whenever the user mentions seqtool, or sequencing a song for an xLights light show."
 ---
 
 # Directing a seqtool sequence
@@ -31,16 +31,17 @@ changes it the same way. Then follow it: **ask** - ask before running anything y
 guess at; **decide** - take the most reasonable reading, say which, and do it (still ask when a
 wrong guess would be expensive to undo: writing into the user's xLights files, deleting).
 
-Written for **seqtool 0.24.58** (this copy comes in that version's download, beside seqtool.py;
+Written for **seqtool 0.24.59** (this copy comes in that version's download, beside seqtool.py;
 it works with later versions too).
 
 ## Running it
 
 - Command form: `python seqtool.py CMD ...` (or `./seqtool-X.Y.Z.pyz CMD ...`), run in the show's
-  working folder (`pwd` says which; `cd FOLDER` changes it).
+  working folder (`pwd` says which; `cd FOLDER` changes it; `dir` lists the files there, `dir *.mp3`
+  or `dir -r --kind audio` finds a song).
 - **Check the version first:** `seqtool --version`. If seqtool says a newer version is available,
   tell the user (on their computer, seqtool's `update` command gets it); don't fetch one here unless
-  they ask. Older than 0.24.58: `status` says nothing about the xLights kit; older than 0.24.57: no `adjust`; older than 0.24.56: no `update`; older than 0.24.55: lyrics times written
+  they ask. Older than 0.24.59: no `dir`, no `xlights-kit --list`; older than 0.24.58: `status` says nothing about the xLights kit; older than 0.24.57: no `adjust`; older than 0.24.56: no `update`; older than 0.24.55: lyrics times written
   `0:12.50 words` (no brackets) aren't read - use `[0:12.50] words`; older than 0.24.54: no `general.directions`
   (ask the user's preference anyway, and keep it in mind for the session); older than 0.24.53: no `"react"` steps; older than 0.24.50: no `score`; older than 0.24.49: no `calls`, cue tags,
   `submodel angles`, `"only"`, `spread: pitch`; older than 0.24.48: no glides (`a..b`),
@@ -66,6 +67,12 @@ it works with later versions too).
   change without a new plan; `replan` makes it - the GUI does that for every change, and makes the plan a few seconds after the last one.) **After a `sections split` /
   `merge` in the same batch, refer to moments by time (`@2`, `@6.5`), not `@#N`**: the section
   numbers change only when the batch's plan is made.
+- **Start by asking for a bundle.** In your first reply - unless one is already uploaded or the
+  session is linked to the user's computer - ask whether they have used seqtool on their computer:
+  if so, they run seqtool's `bundle` command there (it packs the show's layout, the current song,
+  its settings and the xLights training into one .zip) and upload the .zip here. It is the
+  quickest way to their real show. Files uploaded to an earlier chat aren't here, so each new
+  chat asks again (a fresh `bundle` also carries their latest changes). No bundle: they are a new user - see "First time" below.
 - **Which show?** Before changing anything, make sure you work on the user's own show, not the
   demo: `status` / `layout` show the song and the layout's file (`demo-song`, `seqtool-demo/` =
   the demo). If the session isn't linked to the user's computer, ask them to run `seqtool bundle`
@@ -85,7 +92,8 @@ it works with later versions too).
   2. **Getting seqtool going on their computer**: Python 3.10 or newer (`python --version`;
      python.org if not); unzip the download into a folder (or keep the .pyz as it is - one file,
      nothing to unzip); open a terminal in that folder; start seqtool with `python seqtool.py`
-     (or `python seqtool-X.Y.Z.pyz`) - it shows the `seqtool>` prompt, where the commands are
+     (or `python seqtool-X.Y.Z.pyz`; `seqtool.pyz` beside it always starts the newest one there) -
+     it shows the `seqtool>` prompt, where the commands are
      typed (`python seqtool.py gui` opens the browser view instead, with the same commands).
      Say "start seqtool, then type ...", not just the command.
   3. **What seqtool needs**, in one message: the show's `xlights_rgbeffects.xml` (in their

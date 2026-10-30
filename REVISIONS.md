@@ -1,6 +1,6 @@
 # seqtool - revisions
 
-How seqtool got where it is: the notes written with each release (newest first from 0.24.58 down,
+How seqtool got where it is: the notes written with each release (newest first from 0.24.59 down,
 then 0.21.8 - 0.21.10), and the revision log of DESIGN.md. DESIGN.md describes seqtool as it is now.
 
 ## Release notes
@@ -78,6 +78,30 @@ then 0.21.8 - 0.21.10), and the revision log of DESIGN.md. DESIGN.md describes s
   looks most like lyrics (named "lyric...", else the most labels with letters).
   `open-xsq` says so when the song has no lyrics; step 4's menu and a timing mark's menu
   offer it.
+
+0.24.59 (the user's first real song on Windows):
+- `effects picture` (and `effects choreo`) no longer fail: settings that are a file name, text or a
+  plain 0-1 value are listed as such.
+- `run` no longer says choreo is "not learned by the xLights kit": effects that are only ever
+  pinned (choreo, picture) aren't kit steps of their own.
+- Windows prompt: seqtool has its own line editor (Tab completion, history with Up / Down,
+  Left / Right / Home / End, Esc clears) at the seqtool> prompt and at questions; pyreadline3 is
+  no longer loaded (it closed seqtool at start on newer Pythons) and a broken readline anywhere
+  falls back to plain input.
+- Kit: a step that needs another one first is preceded by it in an update (Pictures: the file is
+  chosen again before Scaling, Loop GIF, Transparent Black and Frame Rate) - kit v18; a change
+  step's text no longer repeats the effect (the header has it); the Scaling step says what to do.
+  `xlights-kit --list` numbers every step with its name and marks the ones not learned;
+  `--redo` takes a number, Effect.setting, a whole effect or a structure step (timing, rotation ...).
+- GUI: each command in the console has a copy button (the command and all it printed - a batch's
+  whole output); zoomed in and scrolled sideways, the row names and the player's controls stay in
+  view (and answer clicks).
+- `dir` (also `ls`): the files in a folder or matching a pattern, folders first, with size and
+  date; `--kind audio|xsq|layout|image|bundle|lyrics|json`, `-r` for the folders below; an audio
+  file found gives the `run --audio ...` to type.
+- `seqtool.pyz`: a launcher, built with every package, that starts the newest seqtool-X.Y.Z.pyz,
+  unpacked seqtool or update folder beside it (`--which` says which).
+- The skill asks for a bundle first, and knows `dir` and the launcher.
 
 0.24.58 (the second new-user test, on Windows):
 - Paths: `layout c:\documents\show\` works without quotes (backslashes are kept on Windows
@@ -1551,3 +1575,4 @@ rev 136 (seqtool 0.24.55, patch): new-user test fixes (bare lyric times, missing
 rev 137 (seqtool 0.24.56, minor): update check and 'update' (GitHub releases or the main branch).
 rev 138 (seqtool 0.24.57, minor): adjust (settings over what plays, faces too); Windows console colours; overview and source map.
 rev 139 (seqtool 0.24.58, patch): second new-user test fixes (Windows paths, kit labels and Pictures, status kit line); REVISIONS.md split out; favicon.
+rev 140 (seqtool 0.24.59, patch): real-song fixes (effects listing, choreo note, Windows line editor, kit prerequisites / --list / --redo N, GUI copy and sticky column, dir, seqtool.pyz launcher).

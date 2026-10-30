@@ -72,6 +72,9 @@ def build_steps(known: dict | None = None) -> list[dict]:
             continue
         steps.append({"kind": "add", "effect": e["effect"], "generic": e["generic"],
                       **({"on": e["on"]} if e.get("on") else {})})
+        if known is not None:                     # 0.24.59: what a missing step needs is done again first
+            need = {v.get("needs") for v in todo if v.get("needs")}
+            todo = [v for v in e["variants"] if v in todo or v["param"] in need]
         for v in (todo if known is not None else e["variants"]):
             steps.append({"kind": "change", "effect": e["effect"], "generic": e["generic"],
                           "param": v["param"], "do": v["do"]})
@@ -150,8 +153,8 @@ def step_text(step: dict, work: Path, model: str | None) -> str:
         if step.get("on"):                           # 0.24.58: the next steps need a certain kind of model
             where = f"({step['on']})"
         return f"Add {step['effect']} with its default settings to one model {where}. Save."
-    if k == "change":
-        return f"{step['effect']}: {step['do']}. Save."
+    if k == "change":                             # the header names the effect (0.24.59)
+        return f"{step['do'][:1].upper()}{step['do'][1:]}. Save."
     return step["do"] + " Save."
 
 
@@ -804,7 +807,7 @@ def run(kit_dir: Path | None = None, interactive_mode: bool | None = None, fresh
                 info("  nothing new to learn")
                 return True
         for i, st in enumerate(steps, 1):
-            print(f"  {i:>2}. {step_text(st, work, None)}")
+            print(f"  {i:>2}. {step_label(st)}: {step_text(st, work, None)}")
         return bool(vers)
     known = None
     if vers:
@@ -946,10 +949,45 @@ def main(argv=None) -> int:
     ap.add_argument("--fresh", action="store_true", help="forget saved progress and start at step 1")
     ap.add_argument("--update", action="store_true",
                     help="learn only what the existing training lacks (after a seqtool update adds steps)")
-    ap.add_argument("--redo", metavar="[EFFECT.]STEP", action="append", default=[],
-                    help="learn these steps again, as with --update (e.g. --redo Faces.timing_track)")
+    ap.add_argument("--redo", metavar="STEP", action="append", default=[],
+                    help="learn these steps again, as with --update: a number or name from --list "
+                         "(e.g. --redo 35, --redo Faces.timing_track, --redo Pictures, --redo timing)")
+    ap.add_argument("--list", action="store_true", help="list the kit's steps (numbers and names for --redo)")
     a = ap.parse_args(argv)
+    if a.list:
+        obs = None
+        if learned_versions():
+            from .encoding import find
+            enc = find()
+            obs = missing_steps(enc.version)[0] if enc else None
+        print("{head}xLights kit steps{/} ('xlights-kit --redo NUMBER-OR-NAME' learns one again; several: "
+              "--redo A --redo B):")
+        for line in list_steps(obs):
+            print(line)
+        return 0
     return 0 if run(a.dir, fresh=a.fresh, update=True if (a.update or a.redo) else None, redo=a.redo) else 1
+
+
+def redo_name(step: dict) -> str:
+    """The name --redo takes for a step: Effect.param, Effect (its add step) or the structure kind."""
+    if step["kind"] == "change":
+        return f"{step['effect']}.{step['param']}"
+    if step["kind"] == "add":
+        return step["effect"]
+    return step["kind"]
+
+
+def list_steps(obs: dict | None) -> list[str]:
+    """0.24.59: every kit step, numbered, with its --redo name and whether this training has it."""
+    full = build_steps()
+    missing = {redo_name(st) for st in build_steps(obs)} if obs is not None else set()
+    out = []
+    for i, st in enumerate(full, 1):
+        if st["kind"] == "create":
+            continue
+        mark = "" if obs is None else ("  {warn}(not learned){/}" if redo_name(st) in missing else "")
+        out.append(f"  {i:>2}. {step_label(st):<16} {{do}}{redo_name(st)}{{/}}{mark}")
+    return out
 
 
 def forget_steps(obs: dict, redo: list[str]) -> tuple[dict, list[str]]:
@@ -957,7 +995,24 @@ def forget_steps(obs: dict, redo: list[str]) -> tuple[dict, list[str]]:
     so --update asks for them again. (copy, the steps taken out)"""
     obs = json.loads(json.dumps(obs))
     gone = []
+    full = build_steps()
     for want in redo:
+        if str(want).isdigit() and 1 <= int(want) <= len(full):      # 0.24.59: a number from --list
+            want = redo_name(full[int(want) - 1])
+        st_kinds = {k for k in (obs.get("structure") or {})}
+        hit = [k for k in st_kinds if k.lower() == str(want).lower()
+               or STRUCTURE_LABELS.get(k, "").lower() == str(want).lower()]
+        if hit:                                    # a structure step (timing, rotation, ...)
+            for k in hit:
+                obs["structure"].pop(k, None)
+                gone.append(k)
+            continue
+        whole = [n for n in (obs.get("effects") or {}) if n.lower() == str(want).lower()]
+        if whole:                                  # a whole effect: its add step and every setting
+            for n in whole:
+                obs["effects"].pop(n)
+                gone.append(n)
+            continue
         eff, _, par = want.rpartition(".")
         for name, e in (obs.get("effects") or {}).items():
             if eff and name.lower() != eff.lower():

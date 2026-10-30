@@ -504,7 +504,10 @@ def repl(cmds: dict) -> int:
     _up.at_start("prompt")                       # 0.24.56: a newer seqtool? (general.check_updates)
     from seqtool.common import current as _cur
     _cur.follow_song()
+    from seqtool.common import lineedit as _le
     try:
+        if _le.available():                       # 0.24.59: Windows - seqtool's own line editor, not pyreadline3
+            raise ImportError
         import readline
         from seqtool.common import history as _h
         for x in _h.lines():                          # the GUI's commands too (one file, common/history)
@@ -547,11 +550,8 @@ def repl(cmds: dict) -> int:
         readline.set_completer_delims(" \t")
         readline.set_completion_display_matches_hook(show_matches)
         readline.parse_and_bind("tab: complete")
-    except ImportError:
+    except Exception:  # noqa: BLE001 - no readline (Windows) or a broken one: never stop the prompt
         readline = None
-        if os.name == "nt":                     # 0.24.58: Windows' Python has no line editor of its own
-            print("(Tab completion at this prompt needs pyreadline3 on Windows: 'py -m pip install pyreadline3', "
-                  "then start seqtool again - the GUI's console completes without it)")
     print(f"seqtool {__version__} - type 'help' for commands, 'quit' to leave")
     try:                                              # 0.24.34: general.session_start (doctor, sections, feel)
         from seqtool.common import start_cmd
@@ -563,7 +563,14 @@ def repl(cmds: dict) -> int:
     last_tb = None
     while True:
         try:
-            line = input("seqtool> ").strip()
+            if _le.available():
+                from seqtool.common import history as _h2
+                from seqtool.common.complete import complete as _engine, complete_answer as _ca
+                from seqtool.common.prompt import answer_kind as _ak
+                line = _le.read_line("seqtool> ", complete=lambda t: _ca(t, _ak()) if _ak() else _engine(t),
+                                     history=_h2.lines()).strip()
+            else:
+                line = input("seqtool> ").strip()
         except EOFError:
             print()
             break

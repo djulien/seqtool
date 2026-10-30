@@ -46,6 +46,8 @@ COMMAND_WORDS = {
     "unborrow": [["*target"], ["*time"]],
     "pref": [["*prefname", "changed", "edit", "reset"], ["*prefnext"], ["*prefvalue"]],
     "cd": [["*dir"]],
+    "dir": [["*path"]],
+    "ls": [["*path"]],
     "tutorial": [["*tutorial"]],
     "inspect": [["*inspect"]],
     "play": [["*time"]],

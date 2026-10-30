@@ -1,4 +1,4 @@
-# seqtool — music → light-sequence toolchain (prototype, v0.24.58)
+# seqtool — music → light-sequence toolchain (prototype, v0.24.59)
 
 The design is in [DESIGN.md](DESIGN.md) (findings on the developer's own songs and show: DESIGN-addendum.md); [HANDOFF.md](HANDOFF.md) is the short version for picking up development (state, conventions, open items). The core is generic; xLights lives in `seqtool/adapters/xlights/`.
 
@@ -7,11 +7,11 @@ The design is in [DESIGN.md](DESIGN.md) (findings on the developer's own songs a
 You need Python 3.10 or newer (python.org). seqtool offers to install numpy, the one package it
 can't start without; ffmpeg is optional and is only needed for MP3 and other non-WAV files.
 
-**Quickest: the single-file download.** Download `seqtool-0.24.58.pyz` (from the project's page,
+**Quickest: the single-file download.** Download `seqtool-0.24.59.pyz` (from the project's page,
 https://github.com/djulien/seqtool) into a folder of your own and run it:
 
 ```bash
-python seqtool-0.24.58.pyz         # Windows: py seqtool-0.24.58.pyz - or double-click it
+python seqtool-0.24.59.pyz         # Windows: py seqtool-0.24.59.pyz - or double-click it
 ```
 
 The first time, it unpacks itself into a `seqtool` folder beside it and starts the `seqtool>`
@@ -19,10 +19,16 @@ prompt (type `help`, `doctor`, `tutorial` or `demo`). Later runs start straight 
 upgrades that folder, keeping files you changed. (Windows: for colours, start it from Windows
 Terminal.)
 
+Keep `seqtool.pyz` (the small launcher from the same page) in that folder too and start that one:
+it always runs the newest `seqtool-X.Y.Z.pyz` (or unpacked seqtool) beside it, so a newer
+download - or one seqtool's `update` command fetched - is used without changing your shortcut.
+At the prompt, `dir` lists the files in the working folder (`dir *.mp3`, `dir -r --kind audio`) to
+find the name a command wants; Tab completes names, on Windows too.
+
 **Or the .zip** (the same files, unpacked yourself):
 
 ```bash
-unzip seqtool-0.24.58.zip && cd seqtool
+unzip seqtool-0.24.59.zip && cd seqtool
 ./seqtool.py            # interactive prompt: type 'help', 'demo', 'inspect audio', 'quit' ...; Tab completes (twice: choices); 'history', '!!', '!N' 
 ./seqtool.py -demo      # or run one command and exit: the demo
 ./seqtool.py --gui      # prompt + live browser GUI (menu, timeline with pin/reroll on each effect and each row, a console that runs commands)

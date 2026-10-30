@@ -57,10 +57,23 @@ def effects_text(name: str | None = None) -> str:
     if ps:
         L.append("  parameters:")
         for p, spec in ps.items():
-            L.append(f"    {p:<16} " + (f"one of {', '.join(spec['choices'])} (chosen by the seed)" if "choices" in spec
-                                       else f"{spec['range'][0]}-{spec['range'][1]}, follows {spec['driver']}"))
+            L.append(f"    {p:<16} " + _param_line(spec, e.get("auto") is False))
     L.append("  (ratings are 0-1; 'music fit' compares what is heard with these ideals)")
     return "\n".join(L)
+
+
+def _param_line(spec: dict, yours: bool) -> str:
+    """One parameter as 'effects NAME' shows it (0.24.59: text, file and plain 0-1 settings too)."""
+    dflt = f" (default {spec['default']})" if "default" in spec else ""
+    if "choices" in spec:
+        return f"one of {', '.join(map(str, spec['choices']))}" + (dflt if yours else " (chosen by the seed)")
+    if spec.get("file"):
+        return "a file name - e.g. file=pumpkin.gif"
+    if spec.get("text"):
+        return 'text - e.g. name="arm wave"'
+    if "range" in spec:
+        return f"{spec['range'][0]}-{spec['range'][1]}" + (f", follows {spec['driver']}" if spec.get("driver") else "")
+    return "0-1 (or low / medium / high)" + dflt
 
 
 def presets_text(name: str | None = None) -> str:

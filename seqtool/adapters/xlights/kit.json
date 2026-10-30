@@ -1,6 +1,6 @@
 {
-  "_doc": "Steps for the live xLights kit wizard. One working sequence file; after each step the user saves and the wizard checks the file immediately. For a change step the wizard looks at the right-most effect of that type and compares it with both the previous step and the effect's defaults, keeping the smaller difference - so the user may keep editing the same effect or add a fresh copy for each step. Labels are from recent xLights; 'aka' gives alternate names. kit_version is bumped whenever the steps change; min_compatible is the oldest kit_version whose results can still be used as-is (older ones must be re-trained). 'xlights-kit --update' learns only the steps a version's training doesn't have yet (e.g. after a kit_version bump).",
-  "kit_version": 17,
+  "_doc": "Steps for the live xLights kit wizard. One working sequence file; after each step the user saves and the wizard checks the file immediately. For a change step the wizard looks at the right-most effect of that type and compares it with both the previous step and the effect's defaults, keeping the smaller difference - so the user may keep editing the same effect or add a fresh copy for each step. Labels are from recent xLights; 'aka' gives alternate names. kit_version is bumped whenever the steps change; min_compatible is the oldest kit_version whose results can still be used as-is (older ones must be re-trained). 'xlights-kit --update' learns only the steps a version's training doesn't have yet (e.g. after a kit_version bump); a variant's 'needs' names another variant of the effect that must be done first (Pictures: the file), which --update then asks for again too.",
+  "kit_version": 18,
   "effects": [
     {
       "effect": "Color Wash",
@@ -290,18 +290,22 @@
         },
         {
           "param": "scale_none",
-          "do": "Scaling: No Scaling (choosing the file switched it to Scale To Fit)"
+          "needs": "file",
+          "do": "Scaling: set it to No Scaling (choosing the file in the step before switched it to Scale To Fit by itself)"
         },
         {
           "param": "loop_gif",
+          "needs": "file",
           "do": "tick Loop GIF"
         },
         {
           "param": "transparent_black",
+          "needs": "file",
           "do": "tick Transparent Black"
         },
         {
           "param": "gif_speed",
+          "needs": "file",
           "do": "Frame Rate Adj (the GIF's speed): set to its maximum"
         }
       ]

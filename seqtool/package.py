@@ -15,6 +15,10 @@ for installation if it is missing):
               or: py seqtool-0.19.3.pyz
 Its own options: --unpack-only, --unpack-to DIR, --where.
 
+It also writes seqtool.pyz (0.24.59): a small launcher with no seqtool of its own, which
+starts the newest seqtool-X.Y.Z.pyz (or unpacked seqtool folder) in its folder - keep it
+as the one thing you start, and drop newer downloads beside it ('--which' says which).
+
 --exe (experimental, not tested yet) also wraps it as a stand-alone program with
 PyInstaller, which must be installed and which builds for the system it runs on
 (run it on Windows for a .exe). That program still uses the Python installed on
@@ -77,6 +81,17 @@ def build(out_dir: Path, root: Path = ROOT, tests: bool = False) -> Path:
     return target
 
 
+def build_launcher(out_dir: Path, root: Path = ROOT) -> Path:
+    """0.24.59: seqtool.pyz - starts the newest seqtool-X.Y.Z.pyz (or unpacked folder) beside it."""
+    with tempfile.TemporaryDirectory() as tmp:
+        t = Path(tmp)
+        shutil.copy(root / "seqtool" / "launcher.py", t / "__main__.py")
+        target = out_dir / "seqtool.pyz"
+        zipapp.create_archive(t, target, interpreter="/usr/bin/env python3", compressed=True)
+    target.chmod(0o755)
+    return target
+
+
 def build_exe(pyz: Path) -> Path | None:
     import importlib.util
     if importlib.util.find_spec("PyInstaller") is None:
@@ -116,6 +131,8 @@ def main(argv=None) -> int:
     good(f"wrote {show(pyz)} ({pyz.stat().st_size / 1e6:.1f} MB, {n} files)")
     info(f"  Linux: '{pyz.name}' runs as it is ({{do}}./{pyz.name}{{/}}); Windows: double-click it, or "
          f"{{do}}py {pyz.name}{{/}} - the files are unpacked next to it, in a 'seqtool' folder")
+    launcher = build_launcher(out)
+    good(f"wrote {show(launcher)} - starts the newest seqtool-X.Y.Z.pyz (or unpacked seqtool) beside it")
     if a.exe:
         exe = build_exe(pyz)
         if exe:

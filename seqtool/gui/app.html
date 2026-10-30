@@ -126,7 +126,8 @@ border-radius:8px;padding:8px 12px;max-height:50vh;overflow:auto;font:12px/1.4 u
 #bar{padding:6px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 #wrap{flex:1;overflow:auto;padding:0 14px 8px;position:relative}
 #cvsec{position:sticky;top:0;z-index:3;display:block}    /* 0.24.11: the section headings stay in view */
-#lanectl{position:absolute;left:14px;width:186px;display:none;font-size:11px;color:var(--dim)}
+#lanectl{position:absolute;left:14px;width:186px;display:none;font-size:11px;color:var(--dim);z-index:2}
+#cvlab{position:absolute;z-index:1;display:none;box-shadow:2px 0 4px rgba(0,0,0,.25)}   /* 0.24.59: the row names stay in view */
 #wrap .ov{position:absolute;z-index:2;font-size:11px;display:flex;align-items:center;gap:3px;white-space:nowrap}
 #magbtn{padding:0 5px;font-size:13px;line-height:16px} #wrap #pp,#wrap #pseek,#wrap #legctl,#wrap #zoomw,#wrap #vocwrap{z-index:4}
 #wrap .pc button,#wrap #pp{font-size:10px;padding:0 4px;line-height:16px;margin:0} #wrap #pp{font-size:11px;width:24px}
@@ -164,6 +165,8 @@ padding:4px 0;min-width:230px;box-shadow:0 4px 16px #0006}
 #split{height:6px;cursor:row-resize;background:var(--grid)}
 #console{flex:0 0 35%;min-height:80px;display:flex;flex-direction:column;background:var(--panel)}
 #out{flex:1;overflow:auto;padding:8px 14px}
+#out .cpy{float:right;font:11px system-ui;padding:0 6px;margin:1px 0 0 8px;opacity:.35;cursor:pointer}
+#out .cpy:hover{opacity:1}
 #in{display:flex;gap:6px;padding:6px 14px;border-top:1px solid var(--grid);align-items:center}
 #in span{font:12px ui-monospace,'DejaVu Sans Mono','Liberation Mono','Noto Sans Mono','Ubuntu Mono',Menlo,Consolas,'Courier New',monospace;color:var(--accent)}
 #line{flex:1;background:transparent;border:none;outline:none;color:var(--fg);font:12px ui-monospace,'DejaVu Sans Mono','Liberation Mono','Noto Sans Mono','Ubuntu Mono',Menlo,Consolas,'Courier New',monospace}
@@ -235,7 +238,7 @@ background:var(--bg);border:1px solid var(--grid);border-radius:8px;box-shadow:0
 <div id="top">
   <div id="bar"><audio id="au" preload="metadata"></audio>
     <span class="dim">click an effect for its explanation, a name for its settings; click above the lanes to seek; on an effect: choose another or promote / demote it (Ctrl+click), select several (Shift+click), pin or reroll (the pin or ... icon on it); Space plays / pauses</span></div>
-  <div id="wrap"><div id="msg">loading...</div><canvas id="cvsec"></canvas><canvas id="cv"></canvas>
+  <div id="wrap"><div id="msg">loading...</div><canvas id="cvsec"></canvas><canvas id="cvlab"></canvas><canvas id="cv"></canvas>
     <!-- 0.22.1: controls placed over the timeline's left column and legend row (draw() positions them) -->
     <!-- 0.24.17: the player's own small controls (the browser's player is gone) -->
     <button id="pp" class="ov pc" title="play / pause (Space)">&#9654;</button>
@@ -406,15 +409,37 @@ function W_(){return cv.width/dpr;}
 const cvsec=document.getElementById('cvsec');
 let STRIP=TOP;                        // 0.24.12: the section headings, the waveform and its bar / beat ticks; 0.24.14: the legend row too
 let LEGPOS={},PCX=150;
+// 0.24.59: scrolled sideways (zoomed in), the left column - row names, the player's controls - stays in view:
+// drawn again at the scroll position (cvlab for the rows, the strip's own left for the top); clicks there go to it
+const cvlab=document.getElementById('cvlab');
+function scrollX(){return document.getElementById('wrap').scrollLeft;}
 function secStrip(W){cvsec.width=cv.width;cvsec.height=Math.round(STRIP*dpr);cvsec.style.width=W+'px';cvsec.style.height=STRIP+'px';
   cvsec.style.marginBottom=(-STRIP)+'px';const c=cvsec.getContext('2d');c.setTransform(1,0,0,1,0,0);
-  c.fillStyle=getComputedStyle(document.body).backgroundColor;c.fillRect(0,0,cvsec.width,cvsec.height);c.drawImage(cv,0,0,cv.width,cvsec.height,0,0,cvsec.width,cvsec.height);
-  const wr=document.getElementById('wrap'),st=wr.scrollTop;cvsec.style.boxShadow=st>2?'0 2px 4px rgba(0,0,0,.25)':'none';
-  place(document.getElementById('pp'),6,st+WY+19);place(document.getElementById('pseek'),PCX,st+WY+19);place(document.getElementById('zoomw'),8,st+WY+43);
-  if(LEGPOS.vw)place(document.getElementById('vocwrap'),LEGPOS.vw[0],st+LEGPOS.vw[1]);if(LEGPOS.st)place(document.getElementById('legctl'),LEGPOS.st[0],st+LEGPOS.st[1]);}   // they stay on it
+  const bg=getComputedStyle(document.body).backgroundColor;
+  c.fillStyle=bg;c.fillRect(0,0,cvsec.width,cvsec.height);c.drawImage(cv,0,0,cv.width,cvsec.height,0,0,cvsec.width,cvsec.height);
+  const wr=document.getElementById('wrap'),st=wr.scrollTop,sl=wr.scrollLeft,lw=Math.round(LABEL*dpr);
+  if(sl>0){const sx=Math.round(sl*dpr),pd=Math.round(Math.min(sl,cv.offsetLeft)*dpr);c.fillStyle=bg;c.fillRect(sx-pd,0,lw+pd,cvsec.height);c.drawImage(cv,0,0,lw,cvsec.height,sx,0,lw,cvsec.height);}
+  cvsec.style.boxShadow=st>2?'0 2px 4px rgba(0,0,0,.25)':'none';
+  if(sl>0){const top=cv.offsetTop+STRIP,h=cv.height-Math.round(STRIP*dpr),pad=Math.round(cv.offsetLeft*dpr);   // with #wrap's padding
+    cvlab.width=lw+pad;cvlab.height=Math.max(1,h);
+    Object.assign(cvlab.style,{display:'block',left:sl+'px',top:top+'px',width:(LABEL+cv.offsetLeft)+'px',height:(h/dpr)+'px'});
+    const k=cvlab.getContext('2d');k.setTransform(1,0,0,1,0,0);k.fillStyle=bg;k.fillRect(0,0,lw+pad,h);k.drawImage(cv,0,Math.round(STRIP*dpr),lw,h,pad,0,lw,h);}
+  else cvlab.style.display='none';
+  const vw=document.getElementById('vocwrap');if(LEGPOS.vw)vw.style.visibility=LEGPOS.vw[0]<sl+LABEL?'hidden':'';   // not over the kept column
+  const lc=document.getElementById('lanectl');lc.style.left=(14+sl)+'px';
+  place(document.getElementById('pp'),sl+6,st+WY+19);place(document.getElementById('pseek'),sl+PCX,st+WY+19);place(document.getElementById('zoomw'),sl+8,st+WY+43);
+  if(LEGPOS.vw)place(document.getElementById('vocwrap'),LEGPOS.vw[0],st+LEGPOS.vw[1]);if(LEGPOS.st)place(document.getElementById('legctl'),sl+LEGPOS.st[0],st+LEGPOS.st[1]);}   // they stay on it
+function toCanvasX(e,r,c){const sl=scrollX(),cx=e.clientX-c.left;   // a click on the kept left column: that column of the canvas
+  return sl>0&&cx-sl>=0&&cx-sl<LABEL?c.left+(cx-sl):e.clientX;}
 ['click','mousemove','mousedown','contextmenu','dblclick','mouseleave'].forEach(type=>cvsec.addEventListener(type,e=>{
   const r=cvsec.getBoundingClientRect(),c=cv.getBoundingClientRect();if(type==='contextmenu')e.preventDefault();
-  cv.dispatchEvent(new MouseEvent(type,{bubbles:true,cancelable:true,clientX:e.clientX,clientY:c.top+(e.clientY-r.top),button:e.button,
+  cv.dispatchEvent(new MouseEvent(type,{bubbles:true,cancelable:true,clientX:toCanvasX(e,r,c),clientY:c.top+(e.clientY-r.top),button:e.button,
+    buttons:e.buttons,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey}));}));
+['click','mousemove','mousedown','mouseup','contextmenu','dblclick','mouseleave','wheel'].forEach(type=>cvlab.addEventListener(type,e=>{
+  const c=cv.getBoundingClientRect(),r=cvlab.getBoundingClientRect();if(type==='contextmenu')e.preventDefault();
+  const cx=c.left+(e.clientX-r.left-cv.offsetLeft);
+  if(type==='wheel'){return;}                                   // the page scrolls as usual
+  cv.dispatchEvent(new MouseEvent(type,{bubbles:true,cancelable:true,clientX:cx,clientY:e.clientY,button:e.button,
     buttons:e.buttons,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey}));}));
 document.getElementById('wrap').addEventListener('scroll',()=>{if(D)secStrip(cv.width/dpr);});
 // ---- rows shown: filtered, moments folded into one row (0.20.3), or the pivot by effect type
@@ -1450,9 +1475,17 @@ function emit(t,cls){
 function setMode(mode,ph){const box=document.getElementById('in');box.classList.toggle('asking',mode==='ask');
   ps.textContent=mode==='ask'?'answer>':'seqtool>';line.placeholder=ph;line.disabled=(mode==='busy');if(mode!=='busy')line.focus();}
 const PH='type a seqtool command (help, run, sections, reroll MegaTree @#3, explain music @30 ...)';
+// 0.24.59: a copy button on each command: the command and all of its output (a batch: everything it printed)
+function cmdCopy(l){const b=document.createElement('button');b.className='cpy';b.textContent='copy';
+  b.title='copy this command and its output';
+  b.onclick=ev=>{ev.stopPropagation();let t='',n=b.nextSibling;
+    while(n&&!(n.classList&&n.classList.contains('cpy'))){t+=n.textContent;n=n.nextSibling;}
+    copyText(t.replace(/\s+$/,'')+'\n',b);};
+  out.appendChild(b);}
 async function runLine(l){
-  emit('seqtool> '+l+'\n','cmd');
   if(['clear','cls'].includes(l.trim())){out.textContent='';conStack=[];conMark=null;return;}
+  conMark=null;cmdCopy(l);
+  emit('seqtool> '+l+'\n','cmd');
   setMode('busy','running...');
   try{const r=await api('/api/cmd',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({line:l})});
       myJob=r.job;jobFrom=0;await catchUp();}           // anything that happened before we knew our job id

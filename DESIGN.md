@@ -1,4 +1,4 @@
-# seqtool — Design Notes (rev 139, 2026-10-28, seqtool 0.24.58)
+# seqtool — Design Notes (rev 140, 2026-10-30, seqtool 0.24.59)
 
 Supersedes the October 4 MVP design PDF and the model-categorization notes.
 Findings on the developer's own songs and show (song names, measurements, the
@@ -447,8 +447,8 @@ drive it.
 
 | Area | Files |
 |---|---|
-| Shell, REPL, help, tests runner, colour install | `seqtool/__main__.py`, `seqtool.py`; `bootstrap.py` + `package.py` (the .pyz) |
-| Common | `common/` - config, prompt, color, log, paths, songs, current, freshness, status, prefcmd, shellcmds, undo, history, deps (optional packages), fuzzy, args, `definitions.py` + `define_cmd.py` (named terms), `showfiles.py` (files into the show folder), `start_cmd.py`, `update.py` (newer versions), `bundle_cmd.py` |
+| Shell, REPL, help, tests runner, colour install | `seqtool/__main__.py`, `seqtool.py`; `bootstrap.py` + `package.py` (the .pyz), `launcher.py` (seqtool.pyz: the newest beside it) |
+| Common | `common/` - config, prompt, color, log, paths, songs, current, freshness, status, prefcmd, shellcmds, undo, history, deps (optional packages), fuzzy, args, `definitions.py` + `define_cmd.py` (named terms), `showfiles.py` (files into the show folder), `start_cmd.py`, `update.py` (newer versions), `bundle_cmd.py`, `lineedit.py` (the Windows prompt's line editor) |
 | Music | `music/analyze.py`, `classify.py`, `laplacian.py`, `sections_cmd.py`, `lyrics.py` (+ `transcribe.py`, Whisper), `voices.py` ({VOICE} codes), `stems.py` (Demucs), `rhythm.py` (incl. `beat_numbers`), `phonemes.py` |
 | Layout / models | `layout/store.py` (`layout` cmd), `adapters/xlights/import_layout.py` (incl. submodels), `models/analyze.py` (submodels, detail_members) |
 | Matchup | `matchup/engine.py` (run, plan_target), `passes.py` (top/detail/enhance, rests, pin rows), `base.py` (whole-yard moments), `parts.py` (what every way of placing an effect shares), `reactive.py` + `keyframes.py` (presets), `choreo.py` (choreographies), `calls.py` + `calls_cmd.py` (call and response), `pins.py`, `place_cmd.py` (promote / demote), `cue_cmd.py`, `feel.py`, `palette_cmd.py`, `score_cmd.py` (the song's score), `batch_cmd.py`, `direct.py` (offline translator), `rules.py` / `rules_cmd.py`, `react_cmd.py`, `catalog.py` (`effects`, `presets`), `cli.py` + `explain.py`, `reroll.py`, `borrow.py` |
@@ -2521,7 +2521,7 @@ Phase A (0.21.7):
   the rest, `--as-is` goes back. The song's own pins and reactions stay (said).
 - Exporter: plans that share a layer are written in one time order (0.21.4).
 
-## 13g. What seqtool does now (0.21.8 - 0.24.58)
+## 13g. What seqtool does now (0.21.8 - 0.24.59)
 
 The current state of what was added since 0.21.7, by topic; how and why each came about, release by
 release, is in REVISIONS.md.
@@ -2561,7 +2561,8 @@ release, is in REVISIONS.md.
   makes the song so again; written beside every export.
 - **xLights**: the kit also learns Render Style, Pictures, value curves (ramp and custom, from
   what changes between three saves) and Roto-Zoom rotation (steps labelled by effect or area;
-  `status` reports a training that lacks steps); the exporter writes value curves for
+  `status` reports a training that lacks steps; `xlights-kit --list` / `--redo N`; a step's 'needs'
+  re-runs what it depends on); the exporter writes value curves for
   glides, rotation on any effect, per-model render style, absolute channels from
   xlights_networks.xml; `fseqdump.py` reads a rendered .fseq.
 - **Sharing**: `bundle` / `bundle --open` carry a show's and song's working files; `demo --bundle`;

@@ -217,9 +217,11 @@ def pipeline(a, demo: bool) -> int:
             _e = _enc.find()
             if _e is not None:
                 avail = set(_e.effects) | {"transparent", "dark"}
-                missing = sorted(set(prefs["effects"]["effects"]) - avail)
-                avail |= {k for k, v in prefs["effects"]["effects"].items() if v.get("auto") is False}   # yours (pins):
-                #   planned anyway - the export says when it can't write one (0.24.46)
+                yours = {k for k, v in prefs["effects"]["effects"].items() if v.get("auto") is False}   # yours (pins):
+                #   planned anyway - the export says when it can't write one (0.24.46); choreo is no xLights
+                #   effect of its own - not a kit step (0.24.59)
+                missing = sorted(set(prefs["effects"]["effects"]) - avail - yours)
+                avail |= yours
                 if missing:
                     info(f"  not learned by the xLights kit yet, so not used: {', '.join(missing)} "
                          "(xlights-kit --update)")
